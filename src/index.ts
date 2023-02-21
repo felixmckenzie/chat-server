@@ -22,10 +22,19 @@ await server.start()
 return server
 }
 
-const apolloServer = createApolloServer()
+const main = async (): Promise<void> => {
+const apolloServer = await createApolloServer()
+
+const PORT = process.env.PORT || 4000
 
 app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(apolloServer) )
 
 app.listen({port: PORT}, ()=> {
 console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`)
 })
+
+}
+
+(async () => {
+    await main()
+})()
