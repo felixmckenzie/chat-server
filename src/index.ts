@@ -5,10 +5,12 @@ import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttp
 import {json} from 'body-parser'
 import cors from 'cors'
 import http from 'http'
-
+import {typeDefs} from './schemas/schema'
 
 const app = express()
 const httpServer = http.createServer(app)
+
+const resolvers = {}
 
 async function createApolloServer(){
 const server = new ApolloServer({
