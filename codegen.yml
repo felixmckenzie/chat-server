@@ -1,7 +1,9 @@
-
-schema: "./schemas/**/*.graphql "
+schema: 'src/**/*.graphql'
 generates:
-  ./src/types/graphql.ts:
+  ./src/types/resolvers-types.ts:
     plugins:
-      - "typescript"
-      - "typescript-resolvers"
+      - 'typescript'
+      - 'typescript-resolvers'
+    config:
+    useIndexSignature: true
+    contextType: '../index#MyContext'
