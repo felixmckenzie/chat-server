@@ -33,178 +33,78 @@ export type AddressInput = {
   state?: InputMaybe<Scalars['String']>;
 };
 
-export type Brand = {
-  __typename?: 'Brand';
-  description: Scalars['String'];
+export type Chat = {
+  __typename?: 'Chat';
   id: Scalars['ID'];
+  isGroupChat: Scalars['Boolean'];
+  messages: Array<Message>;
   name: Scalars['String'];
-  products: Array<Maybe<Product>>;
+  users: Array<User>;
 };
 
-export type BrandInput = {
-  description?: InputMaybe<Scalars['String']>;
-  name?: InputMaybe<Scalars['String']>;
-};
-
-export type Category = {
-  __typename?: 'Category';
+export type Message = {
+  __typename?: 'Message';
+  chat: Chat;
   id: Scalars['ID'];
-  name: Scalars['String'];
-  products: Array<Maybe<Product>>;
-};
-
-export type CategoryInput = {
-  name?: InputMaybe<Scalars['String']>;
+  sender: User;
+  text: Scalars['String'];
+  timestamp: Scalars['DateTime'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createOrder?: Maybe<Order>;
-  createProduct?: Maybe<Product>;
-  createUser?: Maybe<User>;
-  deleteOrder?: Maybe<Order>;
-  deleteProduct?: Maybe<Product>;
-  deleteUser?: Maybe<User>;
-  updateItemToOrder?: Maybe<Order>;
-  updateProduct?: Maybe<Product>;
-  updateUser?: Maybe<User>;
+  addUsersToChat: Chat;
+  createChat: Chat;
+  createMessage: Message;
+  removeUsersFromChat: Chat;
 };
 
 
-export type MutationCreateOrderArgs = {
-  userId: Scalars['ID'];
+export type MutationAddUsersToChatArgs = {
+  chatId: Scalars['ID'];
+  userIds: Array<Scalars['ID']>;
 };
 
 
-export type MutationCreateProductArgs = {
-  productInput: ProductInput;
-};
-
-
-export type MutationCreateUserArgs = {
-  input: UserWithAddressInput;
-};
-
-
-export type MutationDeleteOrderArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type MutationDeleteProductArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type MutationDeleteUserArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type MutationUpdateItemToOrderArgs = {
-  itemId: Scalars['ID'];
-  orderId: Scalars['ID'];
-  quantity: Scalars['Int'];
-  userId: Scalars['ID'];
-};
-
-
-export type MutationUpdateProductArgs = {
-  productInput: ProductInput;
-};
-
-
-export type MutationUpdateUserArgs = {
-  input: UserWithAddressInput;
-};
-
-export type Order = {
-  __typename?: 'Order';
-  billingAddress?: Maybe<Address>;
-  deliveryAddress?: Maybe<Address>;
-  id: Scalars['ID'];
-  orderItems: Array<Maybe<OrderItem>>;
-  orderStatus?: Maybe<OrderStatus>;
-  status?: Maybe<Scalars['Boolean']>;
-  totalPrice?: Maybe<Scalars['Float']>;
-  user: User;
-};
-
-export type OrderItem = {
-  __typename?: 'OrderItem';
-  createdAt?: Maybe<Scalars['DateTime']>;
-  id: Scalars['ID'];
-  order: Order;
-  product: Product;
-  quantity: Scalars['Int'];
-  updatedAt?: Maybe<Scalars['DateTime']>;
-};
-
-export enum OrderStatus {
-  Cancelled = 'CANCELLED',
-  Created = 'CREATED',
-  Delivered = 'DELIVERED',
-  Paid = 'PAID',
-  Refunded = 'REFUNDED',
-  Shipped = 'SHIPPED'
-}
-
-export type Product = {
-  __typename?: 'Product';
-  brand: Brand;
-  category: Category;
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  image?: Maybe<Scalars['String']>;
+export type MutationCreateChatArgs = {
+  isGroupChat: Scalars['Boolean'];
   name: Scalars['String'];
-  orderItems: Array<Maybe<OrderItem>>;
-  price: Scalars['Float'];
+  userIds: Array<Scalars['ID']>;
 };
 
-export type ProductInput = {
-  brand?: InputMaybe<BrandInput>;
-  category?: InputMaybe<CategoryInput>;
-  description?: InputMaybe<Scalars['String']>;
-  image?: InputMaybe<Scalars['String']>;
-  name?: InputMaybe<Scalars['String']>;
-  price?: InputMaybe<Scalars['Float']>;
+
+export type MutationCreateMessageArgs = {
+  chatId: Scalars['ID'];
+  senderId: Scalars['ID'];
+  text: Scalars['String'];
+};
+
+
+export type MutationRemoveUsersFromChatArgs = {
+  chatId: Scalars['ID'];
+  userIds: Array<Scalars['ID']>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  allBrands: Array<Brand>;
-  allCategories: Array<Category>;
-  allProducts: Array<Product>;
-  brandById?: Maybe<Brand>;
-  categoryById?: Maybe<Category>;
-  orderById?: Maybe<Order>;
-  productById?: Maybe<Product>;
-  userById?: Maybe<User>;
+  getChat?: Maybe<Chat>;
+  getUser?: Maybe<User>;
+  messages: Array<Message>;
 };
 
 
-export type QueryBrandByIdArgs = {
+export type QueryGetChatArgs = {
   id: Scalars['ID'];
 };
 
 
-export type QueryCategoryByIdArgs = {
+export type QueryGetUserArgs = {
   id: Scalars['ID'];
 };
 
 
-export type QueryOrderByIdArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryProductByIdArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryUserByIdArgs = {
-  id: Scalars['ID'];
+export type QueryMessagesArgs = {
+  chatId: Scalars['ID'];
 };
 
 export enum Role {
@@ -212,17 +112,26 @@ export enum Role {
   Regular = 'REGULAR'
 }
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  messageSent: Message;
+};
+
+
+export type SubscriptionMessageSentArgs = {
+  chatId: Scalars['ID'];
+};
+
 export type User = {
   __typename?: 'User';
   address?: Maybe<Address>;
+  chats: Array<Chat>;
   createdAt?: Maybe<Scalars['DateTime']>;
   email: Scalars['String'];
   familyName: Scalars['String'];
   givenName: Scalars['String'];
   id: Scalars['ID'];
   mobilePhone: Scalars['String'];
-  orders: Array<Maybe<Order>>;
-  password: Scalars['String'];
   role: Role;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
@@ -308,23 +217,15 @@ export type ResolversTypes = {
   Address: ResolverTypeWrapper<Address>;
   AddressInput: AddressInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Brand: ResolverTypeWrapper<Brand>;
-  BrandInput: BrandInput;
-  Category: ResolverTypeWrapper<Category>;
-  CategoryInput: CategoryInput;
+  Chat: ResolverTypeWrapper<Chat>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
-  Order: ResolverTypeWrapper<Order>;
-  OrderItem: ResolverTypeWrapper<OrderItem>;
-  OrderStatus: OrderStatus;
-  Product: ResolverTypeWrapper<Product>;
-  ProductInput: ProductInput;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
   UserWithAddressInput: UserWithAddressInput;
 };
@@ -334,21 +235,14 @@ export type ResolversParentTypes = {
   Address: Address;
   AddressInput: AddressInput;
   Boolean: Scalars['Boolean'];
-  Brand: Brand;
-  BrandInput: BrandInput;
-  Category: Category;
-  CategoryInput: CategoryInput;
+  Chat: Chat;
   DateTime: Scalars['DateTime'];
-  Float: Scalars['Float'];
   ID: Scalars['ID'];
-  Int: Scalars['Int'];
+  Message: Message;
   Mutation: {};
-  Order: Order;
-  OrderItem: OrderItem;
-  Product: Product;
-  ProductInput: ProductInput;
   Query: {};
   String: Scalars['String'];
+  Subscription: {};
   User: User;
   UserWithAddressInput: UserWithAddressInput;
 };
@@ -363,18 +257,12 @@ export type AddressResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type BrandResolvers<ContextType = any, ParentType extends ResolversParentTypes['Brand'] = ResolversParentTypes['Brand']> = {
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+export type ChatResolvers<ContextType = any, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isGroupChat?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  products?: Resolver<Array<Maybe<ResolversTypes['Product']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  products?: Resolver<Array<Maybe<ResolversTypes['Product']>>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -382,73 +270,41 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
+  chat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  sender?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createOrder?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<MutationCreateOrderArgs, 'userId'>>;
-  createProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'productInput'>>;
-  createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
-  deleteOrder?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<MutationDeleteOrderArgs, 'id'>>;
-  deleteProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
-  deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
-  updateItemToOrder?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<MutationUpdateItemToOrderArgs, 'itemId' | 'orderId' | 'quantity' | 'userId'>>;
-  updateProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'productInput'>>;
-  updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
-};
-
-export type OrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
-  billingAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
-  deliveryAddress?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  orderItems?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
-  orderStatus?: Resolver<Maybe<ResolversTypes['OrderStatus']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  totalPrice?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type OrderItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem']> = {
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  order?: Resolver<ResolversTypes['Order'], ParentType, ContextType>;
-  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType>;
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
-  brand?: Resolver<ResolversTypes['Brand'], ParentType, ContextType>;
-  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  orderItems?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+  addUsersToChat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<MutationAddUsersToChatArgs, 'chatId' | 'userIds'>>;
+  createChat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<MutationCreateChatArgs, 'isGroupChat' | 'name' | 'userIds'>>;
+  createMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'chatId' | 'senderId' | 'text'>>;
+  removeUsersFromChat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChatArgs, 'chatId' | 'userIds'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  allBrands?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
-  allCategories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
-  allProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
-  brandById?: Resolver<Maybe<ResolversTypes['Brand']>, ParentType, ContextType, RequireFields<QueryBrandByIdArgs, 'id'>>;
-  categoryById?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoryByIdArgs, 'id'>>;
-  orderById?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType, RequireFields<QueryOrderByIdArgs, 'id'>>;
-  productById?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductByIdArgs, 'id'>>;
-  userById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByIdArgs, 'id'>>;
+  getChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatArgs, 'id'>>;
+  getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
+  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, 'chatId'>>;
+};
+
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  messageSent?: SubscriptionResolver<ResolversTypes['Message'], "messageSent", ParentType, ContextType, RequireFields<SubscriptionMessageSentArgs, 'chatId'>>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   address?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
+  chats?: Resolver<Array<ResolversTypes['Chat']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   familyName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   givenName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   mobilePhone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  orders?: Resolver<Array<Maybe<ResolversTypes['Order']>>, ParentType, ContextType>;
-  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -456,14 +312,12 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type Resolvers<ContextType = any> = {
   Address?: AddressResolvers<ContextType>;
-  Brand?: BrandResolvers<ContextType>;
-  Category?: CategoryResolvers<ContextType>;
+  Chat?: ChatResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  Order?: OrderResolvers<ContextType>;
-  OrderItem?: OrderItemResolvers<ContextType>;
-  Product?: ProductResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

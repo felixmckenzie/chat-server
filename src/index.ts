@@ -4,6 +4,8 @@ import { expressMiddleware } from '@apollo/server/express4'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { applyMiddleware } from 'graphql-middleware'
 import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer'
+import { WebSocketServer } from 'ws'
+import {useServer} from 'graphql-ws/lib/use/ws'
 import {json} from 'body-parser'
 import { readFileSync } from 'fs'
 import cors from 'cors'
@@ -11,16 +13,34 @@ import http from 'http'
 import { checkJwt } from './middleware/auth'
 import { permissions } from './middleware/permissions'
 const app = express()
+
+
 const httpServer = http.createServer(app)
-
 const resolvers = {}
+const typeDefs = readFileSync('src/schemas/schema.graphql', {encoding: 'utf-8'})
+const schema = makeExecutableSchema({typeDefs, resolvers})
 
-const typeDefs = readFileSync('./schemas/schema.graphql', {encoding: 'utf-8'})
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
+})
+
+const serverCleanup = useServer({ schema }, wsServer)
 
 async function createApolloServer(){
 const server = new ApolloServer({
-schema: applyMiddleware(makeExecutableSchema({typeDefs, resolvers}), permissions) ,
-plugins: [ApolloServerPluginDrainHttpServer({httpServer})]
+ schema,
+plugins: [ApolloServerPluginDrainHttpServer({httpServer}),
+{
+    async serverWillStart() {
+        return {
+            async drainServer() {
+                await serverCleanup.dispose()
+            }
+        }
+    }
+}
+]
 })
 
 await server.start()
@@ -43,7 +63,7 @@ app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(apolloSe
     },
 }) )
 
-app.listen({port: PORT}, ()=> {
+httpServer.listen({port: PORT}, ()=> {
 console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`)
 })
 
