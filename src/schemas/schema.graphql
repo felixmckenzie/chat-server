@@ -1,31 +1,36 @@
-input UserWithAddressInput {
+input UserRegisterInput {
   givenName: String
   familyName: String
   email: String
   mobilePhone: String
   role: Role
-  address: AddressInput
-}
+ }
 
-input AddressInput {
-  address_line_one: String
-  address_line_two: String
-  city: String
-  state: String
-  postCode: String
+
+input UserInput {
+  id: Int!
+  email: String!
 }
 
 type User {
-  id: ID!
+  id: Int!
   createdAt: DateTime
   updatedAt: DateTime
   email: String!
+  avatar: String
   mobilePhone: String!
   givenName: String!
   familyName: String!
-  address: Address
   role: Role!
+  isActive: Boolean!
   chats: [Chat!]!
+  contacts: [Contact!]!
+}
+
+type Contact {
+  id: Int!
+  user: User!
+  contactUser: User!
 }
 
 enum Role {
@@ -33,17 +38,9 @@ enum Role {
   REGULAR
 }
 
-type Address {
-  id: ID!
-  address_line_one: String!
-  address_line_two: String
-  city: String!
-  postCode: String!
-  State: String!
-}
 
 type Chat {
-  id: ID!
+  id: Int!
   name: String!
   users: [User!]!
   messages: [Message!]!
@@ -51,7 +48,7 @@ type Chat {
 }
 
 type Message {
-  id: ID!
+  id: Int!
   text: String!
   sender: User!
   chat: Chat!
@@ -59,20 +56,21 @@ type Message {
 }
 
 type Query {
-  getChat(id: ID!): Chat
-  getUser(id: ID!): User
-  messages(chatId: ID!): [Message!]!
+  getChat(id: Int!): Chat
+  getUser(id: Int!): User
+  getAllUserChats(UserInput: UserInput!): [Chat]!
+  messages(chatId: Int!): [Message!]!
 }
 
 type Mutation {
-  createChat(name: String!, userIds: [ID!]!, isGroupChat: Boolean!): Chat!
-  addUsersToChat(chatId: ID!, userIds: [ID!]!): Chat!
-  removeUsersFromChat(chatId: ID!, userIds: [ID!]!): Chat!
-  createMessage(text: String!, senderId: ID!, chatId: ID!): Message!
+  createChat(name: String!, userIds: [Int!]!, isGroupChat: Boolean!): Chat!
+  addUsersToChat(chatId: ID!, userIds: [Int!]!): Chat!
+  removeUsersFromChat(chatId: ID!, userIds: [Int!]!): Chat!
+  createMessage(text: String!, senderId: ID!, chatId: Int!): Message!
 }
 
 type Subscription {
-  messageSent(chatId: ID!): Message!
+  messageSent(chatId: Int!): Message!
 }
 
 scalar DateTime
