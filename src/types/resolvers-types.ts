@@ -87,9 +87,15 @@ export type MutationRemoveUsersFromChatArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  getAllUserChats: Array<Maybe<Chat>>;
   getChat?: Maybe<Chat>;
   getUser?: Maybe<User>;
   messages: Array<Message>;
+};
+
+
+export type QueryGetAllUserChatsArgs = {
+  UserInput: UserInput;
 };
 
 
@@ -134,6 +140,11 @@ export type User = {
   mobilePhone: Scalars['String'];
   role: Role;
   updatedAt?: Maybe<Scalars['DateTime']>;
+};
+
+export type UserInput = {
+  email: Scalars['String'];
+  id: Scalars['ID'];
 };
 
 export type UserWithAddressInput = {
@@ -227,6 +238,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
+  UserInput: UserInput;
   UserWithAddressInput: UserWithAddressInput;
 };
 
@@ -244,6 +256,7 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   Subscription: {};
   User: User;
+  UserInput: UserInput;
   UserWithAddressInput: UserWithAddressInput;
 };
 
@@ -287,6 +300,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  getAllUserChats?: Resolver<Array<Maybe<ResolversTypes['Chat']>>, ParentType, ContextType, RequireFields<QueryGetAllUserChatsArgs, 'UserInput'>>;
   getChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatArgs, 'id'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, 'chatId'>>;
