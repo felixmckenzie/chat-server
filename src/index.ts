@@ -10,16 +10,16 @@ import {json} from 'body-parser'
 import { readFileSync } from 'fs'
 import cors from 'cors'
 import http from 'http'
-import { checkJwt } from './middleware/auth'
+// import { checkJwt } from './middleware/auth'
 import { permissions } from './middleware/permissions'
 import { context } from './context'
 
 const app = express()
-const httpServer = http.createServer(app)
+ const httpServer = http.createServer(app)
 const resolvers = {}
 const typeDefs = readFileSync('src/schemas/schema.graphql', {encoding: 'utf-8'})
-const schema = applyMiddleware(makeExecutableSchema({typeDefs, resolvers}), permissions)
-
+// const schema = applyMiddleware(makeExecutableSchema({typeDefs, resolvers}), permissions)
+const schema = makeExecutableSchema({typeDefs, resolvers})
 const wsServer = new WebSocketServer({
   server: httpServer,
   path: '/graphql',
@@ -30,7 +30,7 @@ schema,
 context,
 },wsServer)
 
-async function createApolloServer(){
+ async function createApolloServer(){
 const server = new ApolloServer({
  schema,
 plugins: [ApolloServerPluginDrainHttpServer({httpServer}),
@@ -54,9 +54,9 @@ return server
 const main = async (): Promise<void> => {
 const apolloServer = await createApolloServer()
 
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT 
 
-app.use(checkJwt)
+// app.use(checkJwt)
 app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(apolloServer, {
     context: async () => {
        return {context}
@@ -73,3 +73,6 @@ console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/graphql`
 (async () => {
     await main()
 })()
+
+
+export {main, httpServer}

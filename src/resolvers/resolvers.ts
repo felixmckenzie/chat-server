@@ -3,12 +3,12 @@ import { UserInput } from '../types/resolvers-types'
 
 export const resolvers = {
     Query: {
-        getUser: (_parent, args: {id: string}, context: Context ) => {
+        getUser: (_parent, args: {id: number}, context: Context ) => {
             return context.prisma.user.findUnique({
                 where: {id: args.id || undefined}
             })
         },
-        getChat: (_parent, args: {id: string}, context: Context) => {
+        getChat: (_parent, args: {id: number}, context: Context) => {
             return context.prisma.chat.findUnique({
                 where: {id: args.id || undefined}
             })
