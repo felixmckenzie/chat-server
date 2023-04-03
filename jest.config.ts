@@ -9,10 +9,15 @@ const config: Config = {
     'ts-jest': {
       diagnostics: false,
     },
+},
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'mjs'],
   testEnvironment: path.join(__dirname, 'prisma', 'prisma-test-environment.mjs'),
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
-}
+transformIgnorePatterns: ['/node_modules/(?!(auth0)/)'],
+ transform: {
+    '^.+\\.m?js$': 'babel-jest',
+  },
 }
 
 export default config
+

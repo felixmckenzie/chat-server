@@ -18,6 +18,7 @@ model User {
   familyName  String
   mobilePhone String
   email       String    @unique
+  password    String
   isActive    Boolean
   avatar      String?
   role        Role      @default(REGULAR)

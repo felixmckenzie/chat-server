@@ -2,7 +2,6 @@ import express from 'express'
 import { ApolloServer } from '@apollo/server'
 import { expressMiddleware } from '@apollo/server/express4'
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import { applyMiddleware } from 'graphql-middleware'
 import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer'
 import { WebSocketServer } from 'ws'
 import {useServer} from 'graphql-ws/lib/use/ws'
@@ -10,13 +9,16 @@ import {json} from 'body-parser'
 import { readFileSync } from 'fs'
 import cors from 'cors'
 import http from 'http'
-// import { checkJwt } from './middleware/auth'
 import { permissions } from './middleware/permissions'
 import { context } from './context'
+import { isTokenValid } from './middleware/auth'
+import { resolvers } from './resolvers/resolvers'
+type TokenResponse = { error: string } | { decoded: JwtPayload } | { noTokenError: string };
+
 
 const app = express()
- const httpServer = http.createServer(app)
-const resolvers = {}
+const httpServer = http.createServer(app)
+ 
 const typeDefs = readFileSync('src/schemas/schema.graphql', {encoding: 'utf-8'})
 // const schema = applyMiddleware(makeExecutableSchema({typeDefs, resolvers}), permissions)
 const schema = makeExecutableSchema({typeDefs, resolvers})
@@ -28,6 +30,15 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer({ 
 schema,
 context,
+onConnect: async (ctx) =>{
+   const {noTokenError, result}  = await isTokenValid(ctx.connectionParams?.token) as TokenResponse
+  
+   if (noTokenError) {
+      throw new Error(noTokenError)
+    }
+
+    return result
+}
 },wsServer)
 
  async function createApolloServer(){
@@ -51,15 +62,14 @@ await server.start()
 return server
 }
 
-const main = async (): Promise<void> => {
+const main = async () => {
 const apolloServer = await createApolloServer()
 
 const PORT = process.env.PORT 
 
-// app.use(checkJwt)
 app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(apolloServer, {
     context: async () => {
-       return {context}
+       return context
     }
 }) )
 
@@ -68,6 +78,7 @@ console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`)
 console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/graphql`)
 })
 
+
 }
 
 (async () => {
@@ -75,4 +86,4 @@ console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/graphql`
 })()
 
 
-export {main, httpServer}
+export {createApolloServer, httpServer, app}

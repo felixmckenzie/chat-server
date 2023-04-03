@@ -21,7 +21,17 @@
     ],
     "rules": {
          "semi": ["error", "never"],
-        "quotes": ["error", "single"]
+        "quotes": ["error", "single"],
+         "prettier/prettier": [
+            "error",
+            {
+                "trailingComma": "es5",
+                "tabWidth": 4,
+                "semi": false,
+                "singleQuote": true,
+                "printWidth": 160
+            }
+        ]
 
     }
 }

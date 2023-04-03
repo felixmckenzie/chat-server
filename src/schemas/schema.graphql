@@ -1,11 +1,17 @@
+type Query {
+  hello: String
+}
+
 input UserRegisterInput {
   givenName: String
   familyName: String
   email: String
+  password: String
   mobilePhone: String
+  isActive: Boolean
+  avatar: String
   role: Role
- }
-
+}
 
 input UserInput {
   id: Int!
@@ -17,6 +23,7 @@ type User {
   createdAt: DateTime
   updatedAt: DateTime
   email: String!
+  password: String!
   avatar: String
   mobilePhone: String!
   givenName: String!
@@ -38,7 +45,6 @@ enum Role {
   REGULAR
 }
 
-
 type Chat {
   id: Int!
   name: String!
@@ -58,7 +64,7 @@ type Message {
 type Query {
   getChat(id: Int!): Chat
   getUser(id: Int!): User
-  getAllUserChats(UserInput: UserInput!): [Chat]!
+  getAllUserChats(userInput: UserInput!): [Chat]!
   messages(chatId: Int!): [Message!]!
 }
 
@@ -67,6 +73,12 @@ type Mutation {
   addUsersToChat(chatId: ID!, userIds: [Int!]!): Chat!
   removeUsersFromChat(chatId: ID!, userIds: [Int!]!): Chat!
   createMessage(text: String!, senderId: ID!, chatId: Int!): Message!
+  createUser(input: UserRegisterInput!): AuthPayload!
+}
+
+type AuthPayload {
+  user: User!
+  token: String!
 }
 
 type Subscription {
