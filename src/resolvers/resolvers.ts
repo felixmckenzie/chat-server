@@ -1,4 +1,4 @@
-import {context, Context} from '../context'
+import {Context} from '../context'
 import { UserInput, UserRegisterInput } from '../types/resolvers-types'
 import { auth0ManagemenClient } from '../utils/auth0.js'
 import bcrypt from 'bcrypt'
