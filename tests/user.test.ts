@@ -13,6 +13,13 @@ beforeAll ( async () => {
      server = await createApolloServer()
 })
 
+afterAll( async () => {
+    await context.prisma.user.deleteMany()
+    await server.stop()
+    return context.prisma.$disconnect()
+}) 
+
+
 describe('GraphQL Server', () => {
   
     test('Query: hello', async () => {
@@ -36,7 +43,7 @@ describe('GraphQL Server', () => {
    
     const mutation = `mutation CreateUser($input: UserRegisterInput!) {
         createUser(input: $input) {
-           user{ 
+           user { 
             givenName
             familyName
             mobilePhone
@@ -74,7 +81,7 @@ describe('GraphQL Server', () => {
 
       const expectedUser = {
             givenName: variables.input.givenName,
-            amilyName: variables.input.familyName,
+            familyName: variables.input.familyName,
             mobilePhone: variables.input.mobilePhone,
             email: variables.input.email,
             avatar: variables.input.avatar,
@@ -86,6 +93,13 @@ describe('GraphQL Server', () => {
     expect(response.body.errors).toBeUndefined()
     expect(response.body.data.createUser.user).toMatchObject(expectedUser)
 
+  }),
+
+  test('creates a channel with the provided name and users', async () => {
+
+    const testChannelName = 'GroupChat23'      
+
+
   })
 
 
@@ -96,9 +110,4 @@ describe('GraphQL Server', () => {
 
 
 
-afterAll( async () => {
-    await context.prisma.user.deleteMany()
-    await server.stop()
-    return context.prisma.$disconnect()
-}) 
 
