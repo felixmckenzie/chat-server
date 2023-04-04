@@ -22,7 +22,7 @@ A Server for a chat application that enables real-time communication between use
 
 To run the test
 
-- Ensure you have PostgreSQL locally
+- Ensure you have PostgreSQL installed locally
 - Create a .env.test file and declare a DATABASE_URL e.g. "postgresql://prisma:prisma@localhost:5432/test"
 - Create a prisma user with permissions to write to the Database https://www.postgresql.org/docs/8.0/sql-createuser.html
 - npm install
