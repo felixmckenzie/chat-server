@@ -13,6 +13,11 @@ input UserRegisterInput {
   role: Role
 }
 
+input CreateChannelInput {
+  name: String
+  userIds: [Int!]!
+}
+
 input UserInput {
   id: Int!
   email: String!
@@ -30,8 +35,9 @@ type User {
   familyName: String!
   role: Role!
   isActive: Boolean!
-  chats: [Chat!]!
+  channels: [Channel!]!
   contacts: [Contact!]!
+  messages: [Message!]!
 }
 
 type Contact {
@@ -45,10 +51,10 @@ enum Role {
   REGULAR
 }
 
-type Chat {
+type Channel {
   id: Int!
   name: String!
-  users: [User!]!
+  members: [User!]!
   messages: [Message!]!
   isGroupChat: Boolean!
 }
@@ -57,21 +63,21 @@ type Message {
   id: Int!
   text: String!
   sender: User!
-  chat: Chat!
+  channel: Channel
   timestamp: DateTime!
 }
 
 type Query {
-  getChat(id: Int!): Chat
+  getChannel(id: Int!): Channel
   getUser(id: Int!): User
-  getAllUserChats(userInput: UserInput!): [Chat]!
+  getAllUserChannels(userInput: UserInput!): [Channel!]!
   messages(chatId: Int!): [Message!]!
 }
 
 type Mutation {
-  createChat(name: String!, userIds: [Int!]!, isGroupChat: Boolean!): Chat!
-  addUsersToChat(chatId: ID!, userIds: [Int!]!): Chat!
-  removeUsersFromChat(chatId: ID!, userIds: [Int!]!): Chat!
+  createChannel(input: CreateChannelInput!): Channel!
+  addUsersToChannel(chatId: ID!, userIds: [Int!]!): Channel!
+  removeUsersFromChannel(chatId: ID!, userIds: [Int!]!): Channel!
   createMessage(text: String!, senderId: ID!, chatId: Int!): Message!
   createUser(input: UserRegisterInput!): AuthPayload!
 }

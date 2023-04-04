@@ -22,8 +22,8 @@ model User {
   isActive    Boolean
   avatar      String?
   role        Role      @default(REGULAR)
-  chats       Chat[]
-  messages    Message[]
+  Channels    Channel[]
+  Messages    Message[]
   contacts    Contact[]
   contact     Contact?  @relation("ContactUser")
 }
@@ -37,18 +37,18 @@ model Contact {
   id            Int  @id @default(autoincrement())
   user          User @relation(fields: [userId], references: [id])
   userId        Int
-  contactUser   User @relation(name:"ContactUser", fields: [contactUserId], references: [id])
-  contactUserId Int @unique
+  contactUser   User @relation(name: "ContactUser", fields: [contactUserId], references: [id])
+  contactUserId Int  @unique
 }
 
-model Chat {
-  id           Int       @id @default(autoincrement())
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  name         String
-  isGroupChat  Boolean
-  messages     Message[]
-  participants User[]
+model Channel {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String
+  isGroupChat Boolean
+  messages    Message[]
+  members     User[]
 }
 
 model Message {
@@ -58,6 +58,6 @@ model Message {
   text      String
   sender    User     @relation(fields: [userId], references: [id])
   userId    Int
-  chat      Chat     @relation(fields: [chatId], references: [id])
+  channel   Channel  @relation(fields: [chatId], references: [id])
   chatId    Int
 }
