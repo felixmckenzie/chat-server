@@ -11,7 +11,7 @@ export const resolvers = {
         where: { id: args.id || undefined },
       })
     },
-    getChat: (_parent, args: { id: number }, context: Context) => {
+    getChannel: (_parent, args: { id: number }, context: Context) => {
       return context.prisma.channel.findUnique({
         where: { id: args.id || undefined },
       })
@@ -69,6 +69,7 @@ export const resolvers = {
       return { user: user, token: token }
     },
     createChannel: async (_parent, args: { input: CreateChannelInput }, context: Context) => {
+
       const { name, userIds } = args.input
 
       const users = await context.prisma.user.findMany({
@@ -89,6 +90,9 @@ export const resolvers = {
             connect: users.map((user) => ({ id: user.id })),
           },
           isGroupChat: true,
+        },
+        include: {
+            members: true, // Include the members relation in the response
         },
       })  
 

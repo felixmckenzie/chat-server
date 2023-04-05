@@ -2,6 +2,7 @@ import { TestEnvironment } from 'jest-environment-node'
 import { exec } from 'child_process'
 import util from 'util'
 import * as dotenv from 'dotenv'
+import { executeDbSeeding } from './seed'
 
 dotenv.config()
 const execAsync = util.promisify(exec)
@@ -16,7 +17,7 @@ class PrismaTestEnvironment extends TestEnvironment {
     console.log('Setting up PrismaTestEnvironment...')
     try {
       await execAsync('npx prisma migrate deploy --preview-feature')
-      await execAsync('npm run seed')
+      await executeDbSeeding()
     } catch (error) {
       console.error('Error running migrations:', error)
     }

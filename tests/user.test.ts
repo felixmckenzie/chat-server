@@ -69,7 +69,6 @@ describe('GraphQL Server', () => {
       },
     }
 
-    
     jest.spyOn(auth0ManagemenClient, 'createUser').mockResolvedValue({ user_id: 'auth0|12345' })
 
      const response = await request(app)
@@ -96,10 +95,37 @@ describe('GraphQL Server', () => {
   }),
 
   test('creates a channel with the provided name and users', async () => {
+    
+    const channelMutation =  `mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+           id
+           name 
+           members {
+            id
+            givenName
+            email
+           }
+        }
+      }
+    `
+      const variables = {
+        input: {
+          name: 'testChannel123',
+          userIds: [1,2,3,4]
+        }
+      }
 
-    const testChannelName = 'GroupChat23'      
+      const response = await request(app)
+      .post('/graphql')
+      .send({ query: channelMutation, variables })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
 
-
+      expect(response.body.errors).toBeUndefined()
+      expect(response.body.data.createChannel.name).toEqual('testChannel123')
+      expect(response.body.data.createChannel.members[0].givenName).toEqual('Alice')
+      expect(response.body.data.createChannel.members[0].email).toEqual('alice.smith@example.com')
   })
 
 

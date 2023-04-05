@@ -11,7 +11,7 @@ const config: Config = {
     },
 },
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'mjs'],
-  testEnvironment: path.join(__dirname, 'prisma', 'prisma-test-environment.mjs'),
+  testEnvironment: path.join(__dirname, 'prisma', 'prisma-test-environment.js'),
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
 transformIgnorePatterns: ['/node_modules/(?!(auth0)/)'],
  transform: {
