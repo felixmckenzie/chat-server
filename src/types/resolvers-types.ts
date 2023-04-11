@@ -25,9 +25,9 @@ export type Channel = {
   __typename?: 'Channel';
   id: Scalars['Int'];
   isGroupChat: Scalars['Boolean'];
+  members: Array<User>;
   messages: Array<Message>;
   name: Scalars['String'];
-  users: Array<User>;
 };
 
 export type Contact = {
@@ -35,6 +35,11 @@ export type Contact = {
   contactUser: User;
   id: Scalars['Int'];
   user: User;
+};
+
+export type CreateChannelInput = {
+  name?: InputMaybe<Scalars['String']>;
+  userIds: Array<Scalars['Int']>;
 };
 
 export type Message = {
@@ -57,7 +62,7 @@ export type Mutation = {
 
 
 export type MutationAddUsersToChannelArgs = {
-  chatId: Scalars['ID'];
+  chatId: Scalars['Int'];
   userIds: Array<Scalars['Int']>;
 };
 
@@ -68,8 +73,8 @@ export type MutationCreateChannelArgs = {
 
 
 export type MutationCreateMessageArgs = {
-  chatId: Scalars['Int'];
-  senderId: Scalars['ID'];
+  channelId: Scalars['Int'];
+  senderId: Scalars['Int'];
   text: Scalars['String'];
 };
 
@@ -80,7 +85,7 @@ export type MutationCreateUserArgs = {
 
 
 export type MutationRemoveUsersFromChannelArgs = {
-  chatId: Scalars['ID'];
+  channelId: Scalars['Int'];
   userIds: Array<Scalars['Int']>;
 };
 
@@ -110,7 +115,7 @@ export type QueryGetUserArgs = {
 
 
 export type QueryMessagesArgs = {
-  chatId: Scalars['Int'];
+  channelId: Scalars['Int'];
 };
 
 export enum Role {
@@ -125,7 +130,7 @@ export type Subscription = {
 
 
 export type SubscriptionMessageSentArgs = {
-  chatId: Scalars['Int'];
+  channelId: Scalars['Int'];
 };
 
 export type User = {
@@ -140,8 +145,6 @@ export type User = {
   id: Scalars['Int'];
   isActive: Scalars['Boolean'];
   messages: Array<Message>;
-  mobilePhone: Scalars['String'];
-  password: Scalars['String'];
   role: Role;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
@@ -157,14 +160,7 @@ export type UserRegisterInput = {
   familyName?: InputMaybe<Scalars['String']>;
   givenName?: InputMaybe<Scalars['String']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
-  mobilePhone?: InputMaybe<Scalars['String']>;
-  password?: InputMaybe<Scalars['String']>;
   role?: InputMaybe<Role>;
-};
-
-export type CreateChannelInput = {
-  name?: InputMaybe<Scalars['String']>;
-  userIds: Array<Scalars['Int']>;
 };
 
 
@@ -240,8 +236,8 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Channel: ResolverTypeWrapper<Channel>;
   Contact: ResolverTypeWrapper<Contact>;
+  CreateChannelInput: CreateChannelInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -252,7 +248,6 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<User>;
   UserInput: UserInput;
   UserRegisterInput: UserRegisterInput;
-  createChannelInput: CreateChannelInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -261,8 +256,8 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Channel: Channel;
   Contact: Contact;
+  CreateChannelInput: CreateChannelInput;
   DateTime: Scalars['DateTime'];
-  ID: Scalars['ID'];
   Int: Scalars['Int'];
   Message: Message;
   Mutation: {};
@@ -272,7 +267,6 @@ export type ResolversParentTypes = {
   User: User;
   UserInput: UserInput;
   UserRegisterInput: UserRegisterInput;
-  createChannelInput: CreateChannelInput;
 };
 
 export type AuthPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload']> = {
@@ -284,9 +278,9 @@ export type AuthPayloadResolvers<ContextType = any, ParentType extends Resolvers
 export type ChannelResolvers<ContextType = any, ParentType extends ResolversParentTypes['Channel'] = ResolversParentTypes['Channel']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isGroupChat?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  members?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -313,9 +307,9 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addUsersToChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationAddUsersToChannelArgs, 'chatId' | 'userIds'>>;
   createChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationCreateChannelArgs, 'input'>>;
-  createMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'chatId' | 'senderId' | 'text'>>;
+  createMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'channelId' | 'senderId' | 'text'>>;
   createUser?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
-  removeUsersFromChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChannelArgs, 'chatId' | 'userIds'>>;
+  removeUsersFromChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChannelArgs, 'channelId' | 'userIds'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -323,11 +317,11 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetChannelArgs, 'id'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, 'chatId'>>;
+  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, 'channelId'>>;
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
-  messageSent?: SubscriptionResolver<ResolversTypes['Message'], "messageSent", ParentType, ContextType, RequireFields<SubscriptionMessageSentArgs, 'chatId'>>;
+  messageSent?: SubscriptionResolver<ResolversTypes['Message'], "messageSent", ParentType, ContextType, RequireFields<SubscriptionMessageSentArgs, 'channelId'>>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -341,8 +335,6 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
-  mobilePhone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

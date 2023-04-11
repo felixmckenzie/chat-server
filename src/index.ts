@@ -9,10 +9,14 @@ import {json} from 'body-parser'
 import { readFileSync } from 'fs'
 import cors from 'cors'
 import http from 'http'
+import { GraphQLError } from 'graphql'
 import { permissions } from './middleware/permissions'
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
 import { context } from './context'
 import { isTokenValid } from './middleware/auth'
 import { resolvers } from './resolvers/resolvers'
+
+
 type TokenResponse = { error: string } | { decoded: JwtPayload } | { noTokenError: string };
 
 
@@ -30,15 +34,15 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer({ 
 schema,
 context,
-onConnect: async (ctx) =>{
-   const {noTokenError, result}  = await isTokenValid(ctx.connectionParams?.token) as TokenResponse
+// onConnect: async (ctx) =>{
+//    const {noTokenError, result}  = await isTokenValid(ctx.connectionParams?.token) as TokenResponse
   
-   if (noTokenError) {
-      throw new Error(noTokenError)
-    }
+//    if (noTokenError) {
+//       throw new Error(noTokenError)
+//     }
 
-    return result
-}
+//     return result
+// }
 },wsServer)
 
  async function createApolloServer(){
@@ -67,8 +71,18 @@ const apolloServer = await createApolloServer()
 
 const PORT = process.env.PORT 
 
+app.use(ClerkExpressWithAuth())
 app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(apolloServer, {
-    context: async () => {
+    context: async ({req}) => {
+        
+        if(!req.auth.userId){
+            throw new GraphQLError('User is not authenticated', {
+        extensions: {
+          code: 'UNAUTHENTICATED',
+          http: { status: 401 },
+        },
+      })
+        }
        return context
     }
 }) )

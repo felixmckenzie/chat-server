@@ -46,12 +46,11 @@ describe('GraphQL Server', () => {
            user { 
             givenName
             familyName
-            mobilePhone
             email
             avatar
             role
             isActive
-            password
+           
            }
         }
       }
@@ -60,12 +59,10 @@ describe('GraphQL Server', () => {
       input: {
         givenName: 'John',
         familyName: 'Doe',
-        mobilePhone: '1234567890',
         email: 'john.doe@example.com',
         avatar: 'https://example.com/avatar.jpg',
         isActive: true,
         role: 'REGULAR',
-        password: 'testingPassWord123!',
       },
     }
 
@@ -81,7 +78,6 @@ describe('GraphQL Server', () => {
       const expectedUser = {
             givenName: variables.input.givenName,
             familyName: variables.input.familyName,
-            mobilePhone: variables.input.mobilePhone,
             email: variables.input.email,
             avatar: variables.input.avatar,
             role: variables.input.role,

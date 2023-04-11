@@ -1,7 +1,6 @@
-import { Context } from '../context'
-import { CreateChannelInput, UserInput, UserRegisterInput, Channel } from '../types/resolvers-types'
+import { context, Context } from '../context'
+import { CreateChannelInput, UserInput, UserRegisterInput, Channel, Message } from '../types/resolvers-types'
 import { auth0ManagemenClient } from '../utils/auth0.js'
-import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 export const resolvers = {
@@ -20,24 +19,13 @@ export const resolvers = {
       return context.prisma.user
         .findUnique({
           where: { id: args.userInput.id || undefined, email: args.userInput.email },
-        })
-        .Channels()
+        }).channels()
+     
     },
     hello: () => 'Hello, world!',
   },
   Mutation: {
     createUser: async (_parent, args: { input: UserRegisterInput }, context: Context) => {
-      const hashedPassword = await bcrypt.hash(args.input.password, 10)
-
-      const auth0User = await auth0ManagemenClient.createUser({
-        connection: 'Username-Password-Authentication',
-        email: args.input.email,
-        password: hashedPassword,
-        user_metadata: {
-          givenName: args.input.givenName,
-          familyName: args.input.familyName,
-        },
-      })
 
       let user
       try {
@@ -45,9 +33,7 @@ export const resolvers = {
           data: {
             givenName: args.input.givenName,
             familyName: args.input.familyName,
-            mobilePhone: args.input.mobilePhone,
             email: args.input.email,
-            password: hashedPassword,
             isActive: args.input.isActive,
             avatar: args.input.avatar,
             role: args.input.role,
@@ -98,6 +84,48 @@ export const resolvers = {
 
       return channel
     },
+    createMessage: async (_parent, args: {text: string, senderId: number, channelId: number}, context: Context) =>{
+        const { text, senderId, channelId } = args
+        
+        const sender = await context.prisma.user.findUnique({
+        where: { id: senderId },
+      })
+      if (!sender) {
+        throw new Error('Sender not found')
+      }
+
+       const channel = await context.prisma.channel.findUnique({
+        where: { id: channelId },
+      })
+      if (!channel) {
+        throw new Error('Channel not found')
+      }
+
+       const message = await context.prisma.message.create({
+        data: {
+          text: text,
+          sender: {
+            connect: { id: senderId },
+          },
+          channel: {
+            connect: { id: channelId },
+          },
+        },
+      })
+
+       context.pubsub.publish(`messageSent-${channelId}`, { messageSent: message })
+
+      return message
+    }
   },
-  Subscription: {},
+  Subscription: {
+    messageSent: {
+      subscribe: (_parent, args: { channelId: number }, context: Context) => {
+        return context.pubsub.asyncIterator(`messageSent-${args.channelId}`)
+    },
+    resolve: (payload: {messageSent: Message}) => {
+      return payload.messageSent
+    }
+  }
+}
 }

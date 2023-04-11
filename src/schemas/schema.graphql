@@ -6,8 +6,6 @@ input UserRegisterInput {
   givenName: String
   familyName: String
   email: String
-  password: String
-  mobilePhone: String
   isActive: Boolean
   avatar: String
   role: Role
@@ -28,9 +26,7 @@ type User {
   createdAt: DateTime
   updatedAt: DateTime
   email: String!
-  password: String!
   avatar: String
-  mobilePhone: String!
   givenName: String!
   familyName: String!
   role: Role!
@@ -71,14 +67,14 @@ type Query {
   getChannel(id: Int!): Channel
   getUser(id: Int!): User
   getAllUserChannels(userInput: UserInput!): [Channel!]!
-  messages(chatId: Int!): [Message!]!
+  messages(channelId: Int!): [Message!]!
 }
 
 type Mutation {
   createChannel(input: CreateChannelInput!): Channel!
-  addUsersToChannel(chatId: ID!, userIds: [Int!]!): Channel!
-  removeUsersFromChannel(chatId: ID!, userIds: [Int!]!): Channel!
-  createMessage(text: String!, senderId: ID!, chatId: Int!): Message!
+  addUsersToChannel(chatId: Int!, userIds: [Int!]!): Channel!
+  removeUsersFromChannel(channelId: Int!, userIds: [Int!]!): Channel!
+  createMessage(text: String!, senderId: Int!, channelId: Int!): Message!
   createUser(input: UserRegisterInput!): AuthPayload!
 }
 
@@ -88,7 +84,7 @@ type AuthPayload {
 }
 
 type Subscription {
-  messageSent(chatId: Int!): Message!
+  messageSent(channelId: Int!): Message!
 }
 
 scalar DateTime

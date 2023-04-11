@@ -1,11 +1,11 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Dev Chat API",
   "main": "index.js",
   "scripts": {
-    "start": "node -r dist/index.ts",
-    "dev": "ts-node-dev --no-notify --respawn --transpile-only src/index.ts",
+    "start": "node dist/index.js",
+    "dev": "concurrently -n graphql-codegen,ts-node 'graphql-code-generator -w' 'ts-node-dev --no-notify --respawn --transpile-only src/index.ts'",
     "build": "rm -rf dist/* && tsc",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts",
     "test": "dotenv -e .env.test -- jest -i",
@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@apollo/server": "^4.4.0",
+    "@clerk/clerk-sdk-node": "^4.8.2",
     "@graphql-tools/schema": "^9.0.16",
     "@prisma/client": "^4.10.1",
     "auth0": "^3.3.0",
