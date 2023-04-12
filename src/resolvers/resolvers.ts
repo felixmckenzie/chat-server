@@ -31,8 +31,8 @@ export const resolvers = {
       try {
         user = await context.prisma.user.create({
           data: {
-            givenName: args.input.givenName,
-            familyName: args.input.familyName,
+           username: args.input.username,
+            about: args.input.about,
             email: args.input.email,
             isActive: args.input.isActive,
             avatar: args.input.avatar,
@@ -42,17 +42,17 @@ export const resolvers = {
       } catch (error) {
         console.error('Error creating user with Prisma:', error)
       }
-      const token = jwt.sign(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      )
+      // const token = jwt.sign(
+      //   {
+      //     userId: user.id,
+      //     email: user.email,
+      //     role: user.role,
+      //   },
+      //   process.env.JWT_SECRET,
+      //   { expiresIn: '1h' }
+      // )
 
-      return { user: user, token: token }
+      return { user: user}
     },
     createChannel: async (_parent, args: { input: CreateChannelInput }, context: Context) => {
 

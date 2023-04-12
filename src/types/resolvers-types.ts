@@ -135,18 +135,18 @@ export type SubscriptionMessageSentArgs = {
 
 export type User = {
   __typename?: 'User';
+  about?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
   channels: Array<Channel>;
   contacts: Array<Contact>;
   createdAt?: Maybe<Scalars['DateTime']>;
   email: Scalars['String'];
-  familyName: Scalars['String'];
-  givenName: Scalars['String'];
   id: Scalars['Int'];
   isActive: Scalars['Boolean'];
   messages: Array<Message>;
   role: Role;
   updatedAt?: Maybe<Scalars['DateTime']>;
+  username: Scalars['String'];
 };
 
 export type UserInput = {
@@ -155,12 +155,12 @@ export type UserInput = {
 };
 
 export type UserRegisterInput = {
+  about?: InputMaybe<Scalars['String']>;
   avatar?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
-  familyName?: InputMaybe<Scalars['String']>;
-  givenName?: InputMaybe<Scalars['String']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
   role?: InputMaybe<Role>;
+  username?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -325,18 +325,18 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  about?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  familyName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  givenName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

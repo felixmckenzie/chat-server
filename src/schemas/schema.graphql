@@ -3,8 +3,8 @@ type Query {
 }
 
 input UserRegisterInput {
-  givenName: String
-  familyName: String
+  username: String
+  about: String
   email: String
   isActive: Boolean
   avatar: String
@@ -27,8 +27,8 @@ type User {
   updatedAt: DateTime
   email: String!
   avatar: String
-  givenName: String!
-  familyName: String!
+  about: String
+  username: String!
   role: Role!
   isActive: Boolean!
   channels: [Channel!]!
