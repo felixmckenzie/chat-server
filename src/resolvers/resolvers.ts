@@ -27,9 +27,7 @@ export const resolvers = {
   Mutation: {
     createUser: async (_parent, args: { input: UserRegisterInput }, context: Context) => {
 
-      let user
-      try {
-        user = await context.prisma.user.create({
+       const user = await context.prisma.user.create({
           data: {
            username: args.input.username,
             about: args.input.about,
@@ -37,22 +35,11 @@ export const resolvers = {
             isActive: args.input.isActive,
             avatar: args.input.avatar,
             role: args.input.role,
+            clerkId: args.input.clerkId,
           },
         })
-      } catch (error) {
-        console.error('Error creating user with Prisma:', error)
-      }
-      // const token = jwt.sign(
-      //   {
-      //     userId: user.id,
-      //     email: user.email,
-      //     role: user.role,
-      //   },
-      //   process.env.JWT_SECRET,
-      //   { expiresIn: '1h' }
-      // )
-
-      return { user: user}
+     
+      return  user
     },
     createChannel: async (_parent, args: { input: CreateChannelInput }, context: Context) => {
 

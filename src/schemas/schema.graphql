@@ -9,6 +9,7 @@ input UserRegisterInput {
   isActive: Boolean
   avatar: String
   role: Role
+  clerkId: String
 }
 
 input CreateChannelInput {
@@ -23,6 +24,7 @@ input UserInput {
 
 type User {
   id: Int!
+  clerkId: String!
   createdAt: DateTime
   updatedAt: DateTime
   email: String!
@@ -75,12 +77,7 @@ type Mutation {
   addUsersToChannel(chatId: Int!, userIds: [Int!]!): Channel!
   removeUsersFromChannel(channelId: Int!, userIds: [Int!]!): Channel!
   createMessage(text: String!, senderId: Int!, channelId: Int!): Message!
-  createUser(input: UserRegisterInput!): AuthPayload!
-}
-
-type AuthPayload {
-  user: User!
-  token: String!
+  createUser(input: UserRegisterInput!): User!
 }
 
 type Subscription {

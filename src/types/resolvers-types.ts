@@ -15,12 +15,6 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type AuthPayload = {
-  __typename?: 'AuthPayload';
-  token: Scalars['String'];
-  user: User;
-};
-
 export type Channel = {
   __typename?: 'Channel';
   id: Scalars['Int'];
@@ -56,7 +50,7 @@ export type Mutation = {
   addUsersToChannel: Channel;
   createChannel: Channel;
   createMessage: Message;
-  createUser: AuthPayload;
+  createUser: User;
   removeUsersFromChannel: Channel;
 };
 
@@ -138,6 +132,7 @@ export type User = {
   about?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
   channels: Array<Channel>;
+  clerkId: Scalars['String'];
   contacts: Array<Contact>;
   createdAt?: Maybe<Scalars['DateTime']>;
   email: Scalars['String'];
@@ -157,6 +152,7 @@ export type UserInput = {
 export type UserRegisterInput = {
   about?: InputMaybe<Scalars['String']>;
   avatar?: InputMaybe<Scalars['String']>;
+  clerkId?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
   role?: InputMaybe<Role>;
@@ -232,7 +228,6 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  AuthPayload: ResolverTypeWrapper<AuthPayload>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Channel: ResolverTypeWrapper<Channel>;
   Contact: ResolverTypeWrapper<Contact>;
@@ -252,7 +247,6 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  AuthPayload: AuthPayload;
   Boolean: Scalars['Boolean'];
   Channel: Channel;
   Contact: Contact;
@@ -267,12 +261,6 @@ export type ResolversParentTypes = {
   User: User;
   UserInput: UserInput;
   UserRegisterInput: UserRegisterInput;
-};
-
-export type AuthPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload']> = {
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ChannelResolvers<ContextType = any, ParentType extends ResolversParentTypes['Channel'] = ResolversParentTypes['Channel']> = {
@@ -308,7 +296,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addUsersToChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationAddUsersToChannelArgs, 'chatId' | 'userIds'>>;
   createChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationCreateChannelArgs, 'input'>>;
   createMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'channelId' | 'senderId' | 'text'>>;
-  createUser?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
+  createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   removeUsersFromChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChannelArgs, 'channelId' | 'userIds'>>;
 };
 
@@ -328,6 +316,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   about?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
+  clerkId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -341,7 +330,6 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
-  AuthPayload?: AuthPayloadResolvers<ContextType>;
   Channel?: ChannelResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   DateTime?: GraphQLScalarType;

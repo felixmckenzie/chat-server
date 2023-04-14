@@ -11,19 +11,20 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  username   String
-  email      String    @unique
-  isActive   Boolean
-  avatar     String?
-  about      String?
-  role       Role      @default(REGULAR)
-  channels   Channel[]
-  messages   Message[]
-  contacts   Contact[]
-  contact    Contact?  @relation("ContactUser")
+  id        Int       @id @default(autoincrement())
+  clerkId   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  username  String
+  email     String    @unique
+  isActive  Boolean
+  avatar    String?
+  about     String?
+  role      Role      @default(REGULAR)
+  channels  Channel[]
+  messages  Message[]
+  contacts  Contact[]
+  contact   Contact?  @relation("ContactUser")
 }
 
 enum Role {

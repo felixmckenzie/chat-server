@@ -11,13 +11,13 @@ import cors from 'cors'
 import http from 'http'
 import { GraphQLError } from 'graphql'
 import { permissions } from './middleware/permissions'
-import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
+import { ClerkExpressWithAuth, createClerkClient } from '@clerk/clerk-sdk-node'
 import { context } from './context'
-import { isTokenValid } from './middleware/auth'
 import { resolvers } from './resolvers/resolvers'
+import dotenv from 'dotenv'
 
+dotenv.config({path: './.env.local'})
 
-type TokenResponse = { error: string } | { decoded: JwtPayload } | { noTokenError: string };
 
 
 const app = express()
@@ -34,15 +34,6 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer({ 
 schema,
 context,
-// onConnect: async (ctx) =>{
-//    const {noTokenError, result}  = await isTokenValid(ctx.connectionParams?.token) as TokenResponse
-  
-//    if (noTokenError) {
-//       throw new Error(noTokenError)
-//     }
-
-//     return result
-// }
 },wsServer)
 
  async function createApolloServer(){
@@ -69,10 +60,15 @@ return server
 const main = async () => {
 const apolloServer = await createApolloServer()
 
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+
 const PORT = process.env.PORT 
 
-app.use(ClerkExpressWithAuth())
-app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(apolloServer, {
+
+app.use('/graphql',cors<cors.CorsRequest>({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }), clerk.expressWithAuth(), json(), expressMiddleware(apolloServer, {
     context: async ({req}) => {
         
         if(!req.auth.userId){
