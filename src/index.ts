@@ -70,7 +70,7 @@ app.use('/graphql',cors<cors.CorsRequest>({
     credentials: true,
   }), clerk.expressWithAuth(), json(), expressMiddleware(apolloServer, {
     context: async ({req}) => {
-        
+      
         if(!req.auth.userId){
             throw new GraphQLError('User is not authenticated', {
         extensions: {

@@ -104,7 +104,7 @@ export type QueryGetChannelArgs = {
 
 
 export type QueryGetUserArgs = {
-  id: Scalars['Int'];
+  clerkId: Scalars['String'];
 };
 
 
@@ -303,7 +303,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllUserChannels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetAllUserChannelsArgs, 'userInput'>>;
   getChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetChannelArgs, 'id'>>;
-  getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
+  getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'clerkId'>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, 'channelId'>>;
 };

@@ -1,13 +1,11 @@
-import { context, Context } from '../context'
+import { Context } from '../context'
 import { CreateChannelInput, UserInput, UserRegisterInput, Channel, Message } from '../types/resolvers-types'
-import { auth0ManagemenClient } from '../utils/auth0.js'
-import jwt from 'jsonwebtoken'
 
 export const resolvers = {
   Query: {
-    getUser: (_parent, args: { id: number }, context: Context) => {
+    getUser: (_parent, args: { clerkId: string }, context: Context) => {
       return context.prisma.user.findUnique({
-        where: { id: args.id || undefined },
+        where: { clerkId: args.clerkId || undefined },
       })
     },
     getChannel: (_parent, args: { id: number }, context: Context) => {
@@ -22,12 +20,12 @@ export const resolvers = {
         }).channels()
      
     },
-    hello: () => 'Hello, world!',
   },
   Mutation: {
     createUser: async (_parent, args: { input: UserRegisterInput }, context: Context) => {
 
-       const user = await context.prisma.user.create({
+      try{
+         const user = await context.prisma.user.create({
           data: {
            username: args.input.username,
             about: args.input.about,
@@ -40,7 +38,46 @@ export const resolvers = {
         })
      
       return  user
+      } catch(error){
+        console.error(error.message)
+      }
     },
+    addContact: async (_parent, args: {clerkId: string, contactUserEmail: string}, context: Context ) => {
+      const {clerkId, contactUserEmail} = args 
+
+      const currentUser = await context.prisma.user.findUnique({where: {clerkId: clerkId}})
+
+      if(!currentUser){
+        throw new Error('Current User Not Found')
+      }
+
+      const contactUser = await context.prisma.user.findUnique({where: {email: contactUserEmail}})
+      if(!contactUser){
+        throw new Error('Contact Not Found')
+      }
+
+      if(currentUser.clerkId === contactUser.clerkId){
+        throw new Error('Cannot Add Yourself As A Contact')
+      }
+
+      const existingContact = await context.prisma.contact.findFirst({where:{
+        userId: currentUser.id,
+        contactUserId: contactUser.id,
+      }})
+
+      if(existingContact){
+        throw new Error('Contact Already Exists')
+      }
+      const contact = await context.prisma.contact.create({
+        data: {
+            user: { connect: { id: currentUser.id } },
+            contactUser: { connect: { id: contactUser.id } },
+          },
+        })
+
+        return contact
+    }
+    ,
     createChannel: async (_parent, args: { input: CreateChannelInput }, context: Context) => {
 
       const { name, userIds } = args.input

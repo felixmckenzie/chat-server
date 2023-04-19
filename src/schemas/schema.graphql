@@ -67,7 +67,7 @@ type Message {
 
 type Query {
   getChannel(id: Int!): Channel
-  getUser(id: Int!): User
+  getUser(clerkId: String!): User
   getAllUserChannels(userInput: UserInput!): [Channel!]!
   messages(channelId: Int!): [Message!]!
 }
@@ -78,6 +78,7 @@ type Mutation {
   removeUsersFromChannel(channelId: Int!, userIds: [Int!]!): Channel!
   createMessage(text: String!, senderId: Int!, channelId: Int!): Message!
   createUser(input: UserRegisterInput!): User!
+  addContact(userId: Int!, contactUserEmail: String!): Contact!
 }
 
 type Subscription {
