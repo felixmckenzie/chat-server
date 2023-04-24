@@ -1,5 +1,5 @@
-import { Context } from '../context'
-import { CreateChannelInput, UserInput, UserRegisterInput, Channel, Message } from '../types/resolvers-types'
+import { Context, context } from '../context'
+import { CreateChannelInput, UserInput, UserRegisterInput, Channel, Message, FriendRequestStatus } from '../types/resolvers-types'
 
 export const resolvers = {
   Query: {
@@ -42,7 +42,7 @@ export const resolvers = {
         console.error(error.message)
       }
     },
-    addContact: async (_parent, args: {clerkId: string, contactUserEmail: string}, context: Context ) => {
+    sendFriendRequest: async (_parent, args: {clerkId: string, contactUserEmail: string}, context: Context ) => {
       const {clerkId, contactUserEmail} = args 
 
       const currentUser = await context.prisma.user.findUnique({where: {clerkId: clerkId}})
@@ -68,14 +68,41 @@ export const resolvers = {
       if(existingContact){
         throw new Error('Contact Already Exists')
       }
-      const contact = await context.prisma.contact.create({
+      
+      
+      const friendRequest = await context.prisma.friendRequest.create({
         data: {
-            user: { connect: { id: currentUser.id } },
-            contactUser: { connect: { id: contactUser.id } },
+            sender: { connect: { id: currentUser.id } },
+            receiver: { connect: { id: contactUser.id } },
+            status: 'PENDING',
           },
         })
 
-        return contact
+        return friendRequest
+    },
+    respondToFriendRequest: async(_parent, args: {requestId: number, status: FriendRequestStatus}, context: Context) => {
+          
+      const request = await context.prisma.friendRequest.findUnique({ where: { id: args.requestId } })
+          if (!request) {
+             throw new Error('friend request not found')
+          }
+
+        if(args.status === 'ACCEPTED'){
+          await context.prisma.contact.create({
+            data:{
+              user:{connect:{id: request.senderId}},
+              contactUser: {connect:{id: request.receiverId}},
+            }
+          })
+        }
+
+       const updatedRequest = context.prisma.friendRequest.update({
+                                where: { id: args.requestId },
+                                data: { status: args.status },
+                              })
+
+      return updatedRequest
+
     }
     ,
     createChannel: async (_parent, args: { input: CreateChannelInput }, context: Context) => {
@@ -89,6 +116,7 @@ export const resolvers = {
           },
         },
       })
+      
       if (users.some((user) => !user)) {
         throw new Error('One or more users not found')
       }

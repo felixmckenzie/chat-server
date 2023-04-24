@@ -33,15 +33,29 @@ type User {
   username: String!
   role: Role!
   isActive: Boolean!
-  channels: [Channel!]!
-  contacts: [Contact!]!
-  messages: [Message!]!
+  channels: [Channel]
+  contacts: [Contact]
+  messages: [Message]
+  friendRequests: [FriendRequest]
 }
 
 type Contact {
   id: Int!
   user: User!
   contactUser: User!
+}
+
+type FriendRequest {
+  id: Int!
+  sender: User!
+  receiver: User!
+  status: FriendRequestStatus!
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 enum Role {
@@ -78,7 +92,8 @@ type Mutation {
   removeUsersFromChannel(channelId: Int!, userIds: [Int!]!): Channel!
   createMessage(text: String!, senderId: Int!, channelId: Int!): Message!
   createUser(input: UserRegisterInput!): User!
-  addContact(userId: Int!, contactUserEmail: String!): Contact!
+  sendFriendRequest(clerkId: String!, contactUserEmail: String!): FriendRequest!
+  respondToFriendRequest(requestId: Int!, status: FriendRequestStatus!): FriendRequest!
 }
 
 type Subscription {
