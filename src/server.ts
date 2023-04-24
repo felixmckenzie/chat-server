@@ -14,6 +14,14 @@ import { createClerkClient } from '@clerk/clerk-sdk-node'
 import { context } from './context'
 import { resolvers } from './resolvers/resolvers'
 import dotenv from 'dotenv'
+import { Request } from 'express'
+import { Context } from './context'
+
+export interface AuthenticatedRequest extends Request {
+  auth: {
+    userId: string | null;
+  };
+}
 
 dotenv.config()
 
@@ -67,9 +75,10 @@ const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 const PORT = process.env.PORT || 4000
 
 app.use('/graphql',cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(), json(), expressMiddleware(apolloServer, {
-    context: async ({req}) => {
-      
-        if(!req.auth.userId){
+    context: async ({ req }: {req: Request} ) => {
+      const authReq = req as AuthenticatedRequest
+
+        if(!authReq.auth.userId){
             throw new GraphQLError('User is not authenticated', {
         extensions: {
           code: 'UNAUTHENTICATED',
