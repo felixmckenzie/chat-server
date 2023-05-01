@@ -83,6 +83,8 @@ type Query {
   getChannel(id: Int!): Channel
   getUser(clerkId: String!): User
   getAllUserChannels(userInput: UserInput!): [Channel!]!
+  friendRequestsSentByUser(clerkId: String!): [FriendRequest]
+  friendRequestsReceivedByUser(clerkId: String!): [FriendRequest]
   messages(channelId: Int!): [Message!]!
 }
 

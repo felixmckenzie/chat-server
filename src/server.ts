@@ -63,7 +63,6 @@ plugins: [ApolloServerPluginDrainHttpServer({httpServer}),
 })
 
 await server.start()
-
 return server
 }
 

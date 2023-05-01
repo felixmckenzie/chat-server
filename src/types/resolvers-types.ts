@@ -113,11 +113,23 @@ export type MutationSendFriendRequestArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  friendRequestsReceivedByUser?: Maybe<Array<Maybe<FriendRequest>>>;
+  friendRequestsSentByUser?: Maybe<Array<Maybe<FriendRequest>>>;
   getAllUserChannels: Array<Channel>;
   getChannel?: Maybe<Channel>;
   getUser?: Maybe<User>;
   hello?: Maybe<Scalars['String']>;
   messages: Array<Message>;
+};
+
+
+export type QueryFriendRequestsReceivedByUserArgs = {
+  clerkId: Scalars['String'];
+};
+
+
+export type QueryFriendRequestsSentByUserArgs = {
+  clerkId: Scalars['String'];
 };
 
 
@@ -343,6 +355,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  friendRequestsReceivedByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsReceivedByUserArgs, 'clerkId'>>;
+  friendRequestsSentByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsSentByUserArgs, 'clerkId'>>;
   getAllUserChannels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetAllUserChannelsArgs, 'userInput'>>;
   getChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetChannelArgs, 'id'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'clerkId'>>;

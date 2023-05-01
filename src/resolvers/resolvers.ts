@@ -1,4 +1,4 @@
-import { Context, context } from '../context'
+import { Context } from '../context'
 import { CreateChannelInput, UserInput, UserRegisterInput, Channel, Message, FriendRequestStatus } from '../types/resolvers-types'
 
 export const resolvers = {
@@ -20,6 +20,16 @@ export const resolvers = {
         }).channels()
      
     },
+    friendRequestsSentByUser: (_parent, args: {clerkId: string}, context: Context) =>{
+      return context.prisma.friendRequest.findMany({
+        where: {sender: {clerkId: args.clerkId}}
+      })
+    },
+    friendRequestsReceivedByUser: (_parent, args: {clerkId: string}, context: Context) => {
+      return context.prisma.friendRequest.findMany({
+        where: {receiver: {clerkId: args.clerkId}}
+      })
+    }
   },
   Mutation: {
     createUser: async (_parent, args: { input: UserRegisterInput }, context: Context) => {
