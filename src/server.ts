@@ -15,7 +15,6 @@ import { context } from './context'
 import { resolvers } from './resolvers/resolvers'
 import dotenv from 'dotenv'
 import { Request } from 'express'
-import { Context } from './context'
 
 export interface AuthenticatedRequest extends Request {
   auth: {
