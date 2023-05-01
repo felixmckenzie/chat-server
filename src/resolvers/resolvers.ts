@@ -22,12 +22,12 @@ export const resolvers = {
     },
     friendRequestsSentByUser: (_parent, args: {clerkId: string}, context: Context) =>{
       return context.prisma.friendRequest.findMany({
-        where: {sender: {clerkId: args.clerkId}}
+        where: {sender: {clerkId: args.clerkId}, status: 'PENDING'}
       })
     },
     friendRequestsReceivedByUser: (_parent, args: {clerkId: string}, context: Context) => {
       return context.prisma.friendRequest.findMany({
-        where: {receiver: {clerkId: args.clerkId}}
+        where: {receiver: {clerkId: args.clerkId}, status: 'PENDING'}
       })
     }
   },
