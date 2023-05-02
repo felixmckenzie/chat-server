@@ -13,6 +13,7 @@ import { GraphQLError } from 'graphql'
 import { createClerkClient } from '@clerk/clerk-sdk-node'
 import { context } from './context'
 import { resolvers } from './resolvers/resolvers'
+import webhookRoutes from './webhooks/webhookRoutes'
 import dotenv from 'dotenv'
 import { Request } from 'express'
 
@@ -71,6 +72,8 @@ const apolloServer = await createApolloServer()
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 
 const PORT = process.env.PORT || 4000
+
+app.use('/webhook', cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(), json(), webhookRoutes)
 
 app.use('/graphql',cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(), json(), expressMiddleware(apolloServer, {
     context: async ({ req }: {req: Request} ) => {
