@@ -4,7 +4,7 @@
   "description": "Dev Chat API",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "npx prisma generate && node dist/index.js",
     "dev": "concurrently -n graphql-codegen,ts-node 'graphql-code-generator -w' 'ts-node-dev --no-notify --respawn --transpile-only src/index.ts'",
     "build": "rm -rf dist/* && tsc",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts",
