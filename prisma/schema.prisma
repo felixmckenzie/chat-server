@@ -35,11 +35,11 @@ enum Role {
 }
 
 model Contact {
-  id            Int  @id @default(autoincrement())
-  user          User @relation(fields: [userId], references: [id])
-  userId        Int  @unique
-  contactUser   User @relation("Contact", fields: [contactUserId], references: [id])
-  contactUserId Int  @unique
+  id             Int    @id @default(autoincrement())
+  user           User   @relation(fields: [userClerkId], references: [clerkId])
+  userClerkId    String @unique
+  contactUser    User   @relation("Contact", fields: [contactClerkId], references: [clerkId])
+  contactClerkId String @unique
 }
 
 enum FriendRequestStatus {

@@ -71,8 +71,8 @@ export const resolvers = {
       }
 
       const existingContact = await context.prisma.contact.findFirst({where:{
-        userId: currentUser.id,
-        contactUserId: contactUser.id,
+        userClerkId: currentUser.clerkId,
+        contactClerkId: contactUser.clerkId,
       }})
 
       if(existingContact){
@@ -100,8 +100,8 @@ export const resolvers = {
         if(args.status === 'ACCEPTED'){
           await context.prisma.contact.create({
             data:{
-              user:{connect:{id: request.senderId}},
-              contactUser: {connect:{id: request.receiverId}},
+              user:{connect:{clerkId: request.senderClerkId}},
+              contactUser: {connect:{clerkId: request.receiverClerkId}},
             }
           })
         }
