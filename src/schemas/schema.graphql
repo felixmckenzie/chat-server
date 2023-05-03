@@ -4,11 +4,8 @@ type Query {
 
 input UserRegisterInput {
   username: String
-  about: String
   email: String
-  isActive: Boolean
   avatar: String
-  role: Role
   clerkId: String
 }
 
@@ -29,10 +26,8 @@ type User {
   updatedAt: DateTime
   email: String!
   avatar: String
-  about: String
   username: String!
-  role: Role!
-  isActive: Boolean!
+  isOnline: Boolean
   channels: [Channel]
   contacts: [Contact]
   messages: [Message]
@@ -96,10 +91,12 @@ type Mutation {
   createUser(input: UserRegisterInput!): User!
   sendFriendRequest(clerkId: String!, contactUserEmail: String!): FriendRequest!
   respondToFriendRequest(requestId: Int!, status: FriendRequestStatus!): FriendRequest!
+  setUserOnlineStatus(clerkId: String!, isOnline: Boolean!): User!
 }
 
 type Subscription {
   messageSent(channelId: Int!): Message!
+  userOnlineStatusChanged: User!
 }
 
 scalar DateTime

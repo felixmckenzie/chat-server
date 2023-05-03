@@ -1,5 +1,5 @@
 import { Context } from '../context'
-import { CreateChannelInput, UserInput, UserRegisterInput, Message, FriendRequestStatus } from '../types/resolvers-types'
+import { CreateChannelInput, UserInput, UserRegisterInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
 
 export const resolvers = {
   Query: {
@@ -38,11 +38,8 @@ export const resolvers = {
          const user = await context.prisma.user.create({
           data: {
            username: args.input.username,
-            about: args.input.about,
             email: args.input.email,
-            isActive: args.input.isActive,
             avatar: args.input.avatar,
-            role: args.input.role,
             clerkId: args.input.clerkId,
           },
         })
@@ -178,7 +175,21 @@ export const resolvers = {
        context.pubsub.publish(`messageSent-${channelId}`, { messageSent: message })
 
       return message
+    },
+     setUserOnlineStatus: async (_parent, args: { clerkId: string, isOnline: boolean }, context: Context) => {
+    const user = await context.prisma.user.update({
+      where: { clerkId: args.clerkId },
+      data: { isOnline: args.isOnline },
+    })
+
+    if (!user) {
+      throw new Error('User not found')
     }
+
+    context.pubsub.publish('userOnlineStatusChanged', { userOnlineStatusChanged: user })
+
+    return user
+  }
   },
   Subscription: {
     messageSent: {
@@ -187,6 +198,14 @@ export const resolvers = {
     },
     resolve: (payload: {messageSent: Message}) => {
       return payload.messageSent
+    }
+  },
+  userOnlineStatusChanged:  {
+    subscribe: (_parent, _args, context: Context) => {
+      return context.pubsub.asyncIterator('userOnlineStatusChanged')
+    },
+    resolve: (payload: { userOnlineStatusChanged: User }) => {
+      return payload.userOnlineStatusChanged
     }
   }
 }

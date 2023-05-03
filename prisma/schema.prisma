@@ -17,10 +17,8 @@ model User {
   updatedAt      DateTime        @updatedAt
   username       String
   email          String          @unique
-  isActive       Boolean
   avatar         String?
-  about          String?
-  role           Role            @default(REGULAR)
+  isOnline       Boolean?
   channels       Channel[]
   messages       Message[]
   contacts       Contact[]

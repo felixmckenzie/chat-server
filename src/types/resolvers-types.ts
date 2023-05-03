@@ -68,6 +68,7 @@ export type Mutation = {
   removeUsersFromChannel: Channel;
   respondToFriendRequest: FriendRequest;
   sendFriendRequest: FriendRequest;
+  setUserOnlineStatus: User;
 };
 
 
@@ -109,6 +110,12 @@ export type MutationRespondToFriendRequestArgs = {
 export type MutationSendFriendRequestArgs = {
   clerkId: Scalars['String'];
   contactUserEmail: Scalars['String'];
+};
+
+
+export type MutationSetUserOnlineStatusArgs = {
+  clerkId: Scalars['String'];
+  isOnline: Scalars['Boolean'];
 };
 
 export type Query = {
@@ -160,6 +167,7 @@ export enum Role {
 export type Subscription = {
   __typename?: 'Subscription';
   messageSent: Message;
+  userOnlineStatusChanged: User;
 };
 
 
@@ -169,7 +177,6 @@ export type SubscriptionMessageSentArgs = {
 
 export type User = {
   __typename?: 'User';
-  about?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
   channels?: Maybe<Array<Maybe<Channel>>>;
   clerkId: Scalars['String'];
@@ -178,9 +185,8 @@ export type User = {
   email: Scalars['String'];
   friendRequests?: Maybe<Array<Maybe<FriendRequest>>>;
   id: Scalars['Int'];
-  isActive: Scalars['Boolean'];
+  isOnline?: Maybe<Scalars['Boolean']>;
   messages?: Maybe<Array<Maybe<Message>>>;
-  role: Role;
   updatedAt?: Maybe<Scalars['DateTime']>;
   username: Scalars['String'];
 };
@@ -191,12 +197,9 @@ export type UserInput = {
 };
 
 export type UserRegisterInput = {
-  about?: InputMaybe<Scalars['String']>;
   avatar?: InputMaybe<Scalars['String']>;
   clerkId?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
-  isActive?: InputMaybe<Scalars['Boolean']>;
-  role?: InputMaybe<Role>;
   username?: InputMaybe<Scalars['String']>;
 };
 
@@ -352,6 +355,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeUsersFromChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChannelArgs, 'channelId' | 'userIds'>>;
   respondToFriendRequest?: Resolver<ResolversTypes['FriendRequest'], ParentType, ContextType, RequireFields<MutationRespondToFriendRequestArgs, 'requestId' | 'status'>>;
   sendFriendRequest?: Resolver<ResolversTypes['FriendRequest'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'clerkId' | 'contactUserEmail'>>;
+  setUserOnlineStatus?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserOnlineStatusArgs, 'clerkId' | 'isOnline'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -366,10 +370,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   messageSent?: SubscriptionResolver<ResolversTypes['Message'], "messageSent", ParentType, ContextType, RequireFields<SubscriptionMessageSentArgs, 'channelId'>>;
+  userOnlineStatusChanged?: SubscriptionResolver<ResolversTypes['User'], "userOnlineStatusChanged", ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  about?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   channels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Channel']>>>, ParentType, ContextType>;
   clerkId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -378,9 +382,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   friendRequests?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isOnline?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
-  role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

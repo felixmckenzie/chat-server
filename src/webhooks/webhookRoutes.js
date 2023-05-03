@@ -1,26 +1,33 @@
 import { Webhook } from 'svix'
 import express from 'express'
 import bodyParser from 'body-parser'
+import { context, Context } from '../context'
 import dotenv from 'dotenv'
 dotenv.config()
 
 const router = express.Router()
 
 const webhookSecret = process.env.WEB_HOOK_SECRET
-console.log(webhookSecret)
-router.post('/create-user', bodyParser.raw({type: 'application/json'}), async (req, res) => {
+
+router.post('/create-user', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const payload = req.body
   const headers = req.headers
   const webhook = new Webhook(webhookSecret)
-//     const requiredHeaders = {
-//   'svix-id': Array.isArray(headers['svix-id']) ? headers['svix-id'].join(' ') : headers['svix-id'],
-//   'svix-timestamp': Array.isArray(headers['svix-timestamp']) ? headers['svix-timestamp'].join(' ') : headers['svix-timestamp'],
-//   'svix-signature': Array.isArray(headers['svix-signature']) ? headers['svix-signature'].join(' ') : headers['svix-signature'],
-// }
-   try {
+ 
+  try {
     const msg = await webhook.verify(payload, headers)
     console.log('Received webhook:', msg)
-    res.status(200).send('Webhook received')
+    const { username, id, profile_image_url } = msg.data
+    const { emailAddress } = msg.data.email_addresses[0].email_address
+    const newUser = context.prisma.user.create({
+      data: {
+        clerkId: id,
+        username: username,
+        ...(profile_image_url ? { avatar: profile_image_url } : {}),
+        email: emailAddress,
+      },
+    })
+    res.status(200).json(newUser)
   } catch (e) {
     console.error('Error:', e)
     res.status(400).send('Webhook verification failed')
