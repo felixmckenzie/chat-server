@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { PubSub } from 'graphql-subscriptions'
-console.log('Prisma client path:', require.resolve('@prisma/client'))
 
 const prisma = new PrismaClient()
 const pubsub = new PubSub()
