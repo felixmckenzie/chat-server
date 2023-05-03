@@ -1,5 +1,5 @@
 import { Context } from '../context'
-import { CreateChannelInput, UserInput, UserRegisterInput, Channel, Message, FriendRequestStatus } from '../types/resolvers-types'
+import { CreateChannelInput, UserInput, UserRegisterInput, Message, FriendRequestStatus } from '../types/resolvers-types'
 
 export const resolvers = {
   Query: {
