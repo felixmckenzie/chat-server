@@ -92,8 +92,7 @@ app.use('/graphql',cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(),
 }) )
 
 httpServer.listen({port: PORT}, ()=> {
-console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`)
-console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/graphql`)
+console.log(`🚀 Server ready at port:${PORT}`)
 })
 
 
