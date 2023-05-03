@@ -73,7 +73,7 @@ const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 
 const PORT = process.env.PORT || 4000
 
-app.use('/webhook', cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(), json(), webhookRoutes)
+app.use('/webhook', cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(), webhookRoutes)
 
 app.use('/graphql',cors<cors.CorsRequest>(corsOptions), clerk.expressWithAuth(), json(), expressMiddleware(apolloServer, {
     context: async ({ req }: {req: Request} ) => {
