@@ -18,7 +18,7 @@ router.post('/create-user', bodyParser.raw({ type: 'application/json' }), async 
     const msg = await webhook.verify(payload, headers)
     console.log('Received webhook:', msg)
     const { username, id, profile_image_url } = msg.data
-    const { emailAddress } = msg.data.email_addresses[0].email_address
+    const { emailAddress } = msg.data.email_addresses[0]
     const newUser = await context.prisma.user.create({
       data: {
         clerkId: id,
