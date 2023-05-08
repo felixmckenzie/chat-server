@@ -1,11 +1,16 @@
 import { Context } from '../context'
-import { CreateChannelInput, UserInput, UserRegisterInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
+import { CreateChannelInput, UserInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
 
 export const resolvers = {
   Query: {
     getUser: (_parent, args: { clerkId: string }, context: Context) => {
       return context.prisma.user.findUnique({
-        where: { clerkId: args.clerkId || undefined }, include:{friends: true, receivedRequests: true},
+        where: { clerkId: args.clerkId || undefined }, include:{friends: true,  receivedRequests: {
+          include: {
+            sender: true,
+            receiver: true,
+          },
+        },},
       })
     },
     getChannel: (_parent, args: { id: number }, context: Context) => {
