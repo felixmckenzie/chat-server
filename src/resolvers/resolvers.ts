@@ -95,6 +95,9 @@ export const resolvers = {
             receiver: { connect: { clerkId: requestReceiver.clerkId} },
             status: 'PENDING',
           },
+          include: {
+          receiver: true,
+          },
         })
 
         return friendRequest
