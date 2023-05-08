@@ -86,7 +86,7 @@ type Mutation {
   createMessage(text: String!, senderId: Int!, channelId: Int!): Message!
   createUser(input: UserRegisterInput!): User!
   sendFriendRequest(clerkId: String!, contactUserEmail: String!): FriendRequest!
-  respondToFriendRequest(requestId: Int!, status: FriendRequestStatus!): FriendRequest!
+  respondToFriendRequest(requestId: Int!, status: FriendRequestStatus!): User!
   setUserOnlineStatus(clerkId: String!, isOnline: Boolean!): User!
 }
 
