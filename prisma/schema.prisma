@@ -21,8 +21,8 @@ model User {
   isOnline         Boolean?
   channels         Channel[]
   messages         Message[]
-  ownedContacts    Contact[]       @relation("ContactOwner")
-  connectedContacts Contact[]       @relation("ContactConnection")
+  friends          User[]          @relation("Friends")
+  friendOf         User[]          @relation("Friends")
   sentRequests     FriendRequest[] @relation("FriendRequestSender")
   receivedRequests FriendRequest[] @relation("FriendRequestReceiver")
 }
@@ -32,14 +32,6 @@ enum Role {
   REGULAR
 }
 
-model Contact {
-  id             Int    @id @default(autoincrement())
-  owner           User   @relation("ContactOwner",fields: [ownerClerkId], references: [clerkId])
-  ownerClerkId    String 
-  connectedUser    User   @relation("ContactConnection",fields: [connectionClerkId], references: [clerkId])
-  connectionClerkId String 
-  @@unique([ownerClerkId, connectionClerkId])
-}
 
 enum FriendRequestStatus {
   PENDING

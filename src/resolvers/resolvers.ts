@@ -68,8 +68,8 @@ export const resolvers = {
       }
 
       const existingContact = await context.prisma.contact.findFirst({where:{
-        userClerkId: requestSender.clerkId,
-        contactClerkId: requestReceiver.clerkId,
+        ownerClerkId: requestSender.clerkId,
+        connectionClerkId: requestReceiver.clerkId,
       }})
 
       if(existingContact){
@@ -104,26 +104,36 @@ export const resolvers = {
     },
     respondToFriendRequest: async(_parent, args: {requestId: number, status: FriendRequestStatus}, context: Context) => {
           
-      const request = await context.prisma.friendRequest.findUnique({ where: { id: args.requestId } })
+      const request = await context.prisma.friendRequest.findUnique({ where: { id: args.requestId }, include: {sender: true, receiver: true} })
           if (!request) {
              throw new Error('friend request not found')
           }
 
         if(args.status === 'ACCEPTED'){
-          await context.prisma.contact.create({
-            data:{
-              user:{connect:{clerkId: request.senderClerkId}},
-              contactUser: {connect:{clerkId: request.receiverClerkId}},
+          await context.prisma.user.update({
+            where: {clerkId: request.senderClerkId},
+            data: {
+              friends: { 
+                connect:{clerkId: request.receiverClerkId}
+              },
             }
           })
+
+           await context.prisma.user.update({
+          where: { clerkId: request.receiverClerkId },
+          data: {
+            friends: {
+              connect: { clerkId: request.senderClerkId },
+            },
+          },
+        })
         }
 
-       const updatedRequest = context.prisma.friendRequest.update({
-                                where: { id: args.requestId },
-                                data: { status: args.status },
+       await context.prisma.friendRequest.delete({
+                                where: { id: args.requestId }
                               })
 
-      return updatedRequest
+      return request.receiver
 
     }
     ,

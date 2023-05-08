@@ -31,13 +31,10 @@ type User {
   channels: [Channel]
   contacts: [Contact]
   messages: [Message]
-  friendRequests: [FriendRequest]
-}
-
-type Contact {
-  id: Int!
-  user: User!
-  contactUser: User!
+  friends: [User]
+  friendOf: [User]
+  sentRequests: [FriendRequest]
+  receivedRequests: [FriendRequest]
 }
 
 type FriendRequest {
