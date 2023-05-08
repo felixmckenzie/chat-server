@@ -5,7 +5,7 @@ export const resolvers = {
   Query: {
     getUser: (_parent, args: { clerkId: string }, context: Context) => {
       return context.prisma.user.findUnique({
-        where: { clerkId: args.clerkId || undefined },
+        where: { clerkId: args.clerkId || undefined }, include:{friends: true, receivedRequests: true},
       })
     },
     getChannel: (_parent, args: { id: number }, context: Context) => {
@@ -32,27 +32,12 @@ export const resolvers = {
     }
   },
   Mutation: {
-    createUser: async (_parent, args: { input: UserRegisterInput }, context: Context) => {
-
-      try{
-         const user = await context.prisma.user.create({
-          data: {
-           username: args.input.username,
-            email: args.input.email,
-            avatar: args.input.avatar,
-            clerkId: args.input.clerkId,
-          },
-        })
-     
-      return  user
-      } catch(error){
-        console.error(error.message)
-      }
-    },
     sendFriendRequest: async (_parent, args: {clerkId: string, contactUserEmail: string}, context: Context ) => {
       const {clerkId, contactUserEmail} = args 
 
-      const requestSender = await context.prisma.user.findUnique({where: {clerkId: clerkId}})
+      const requestSender = await context.prisma.user.findUnique({where: {clerkId: clerkId},  include: {
+         friends: true,
+      }})
 
       if(!requestSender){
         throw new Error('Current User Not Found')
@@ -67,10 +52,7 @@ export const resolvers = {
         throw new Error('Cannot Add Yourself As A Contact')
       }
 
-      const existingContact = await context.prisma.contact.findFirst({where:{
-        ownerClerkId: requestSender.clerkId,
-        connectionClerkId: requestReceiver.clerkId,
-      }})
+      const existingContact = requestSender.friends.find((friend) => friend.clerkId === requestReceiver.clerkId)
 
       if(existingContact){
         throw new Error('Contact Already Exists')
