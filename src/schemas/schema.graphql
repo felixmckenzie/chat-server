@@ -29,7 +29,6 @@ type User {
   username: String!
   isOnline: Boolean
   channels: [Channel]
-  contacts: [Contact]
   messages: [Message]
   friends: [User]
   friendOf: [User]
