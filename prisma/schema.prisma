@@ -21,10 +21,10 @@ model User {
   isOnline         Boolean?
   channels         Channel[]
   messages         Message[]
-  contacts         Contact[]
+  ownedContacts    Contact[]       @relation("ContactOwner")
+  connectedContacts Contact[]       @relation("ContactConnection")
   sentRequests     FriendRequest[] @relation("FriendRequestSender")
   receivedRequests FriendRequest[] @relation("FriendRequestReceiver")
-  Contact          Contact?        @relation("Contact")
 }
 
 enum Role {
@@ -34,10 +34,11 @@ enum Role {
 
 model Contact {
   id             Int    @id @default(autoincrement())
-  user           User   @relation(fields: [userClerkId], references: [clerkId])
-  userClerkId    String @unique
-  contactUser    User   @relation("Contact", fields: [contactClerkId], references: [clerkId])
-  contactClerkId String @unique
+  owner           User   @relation("ContactOwner",fields: [ownerClerkId], references: [clerkId])
+  ownerClerkId    String 
+  connectedUser    User   @relation("ContactConnection",fields: [connectionClerkId], references: [clerkId])
+  connectionClerkId String 
+  @@unique([ownerClerkId, connectionClerkId])
 }
 
 enum FriendRequestStatus {
