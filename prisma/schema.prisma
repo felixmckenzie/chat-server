@@ -11,20 +11,20 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  clerkId        String?         @unique
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  username       String
-  email          String          @unique
-  avatar         String?
-  isOnline       Boolean?
-  channels       Channel[]
-  messages       Message[]
-  contacts       Contact[]
-  friendRequests FriendRequest[]
-  receiver       FriendRequest?  @relation("Receiver")
-  Contact        Contact?        @relation("Contact")
+  id               Int             @id @default(autoincrement())
+  clerkId          String?         @unique
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  username         String
+  email            String          @unique
+  avatar           String?
+  isOnline         Boolean?
+  channels         Channel[]
+  messages         Message[]
+  contacts         Contact[]
+  sentRequests     FriendRequest[] @relation("FriendRequestSender")
+  receivedRequests FriendRequest[] @relation("FriendRequestReceiver")
+  Contact          Contact?        @relation("Contact")
 }
 
 enum Role {
@@ -49,10 +49,12 @@ enum FriendRequestStatus {
 model FriendRequest {
   id              Int                 @id @default(autoincrement())
   status          FriendRequestStatus
-  sender          User                @relation(fields: [senderClerkId], references: [clerkId])
-  senderClerkId   String              @unique
-  receiver        User                @relation("Receiver", fields: [receiverClerkId], references: [clerkId])
-  receiverClerkId String              @unique
+  sender          User                @relation("FriendRequestSender", fields: [senderClerkId], references: [clerkId])
+  senderClerkId   String
+  receiver        User                @relation("FriendRequestReceiver", fields: [receiverClerkId], references: [clerkId])
+  receiverClerkId String
+
+  @@unique([senderClerkId, receiverClerkId])
 }
 
 model Channel {

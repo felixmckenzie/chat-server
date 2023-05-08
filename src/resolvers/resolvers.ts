@@ -52,35 +52,47 @@ export const resolvers = {
     sendFriendRequest: async (_parent, args: {clerkId: string, contactUserEmail: string}, context: Context ) => {
       const {clerkId, contactUserEmail} = args 
 
-      const currentUser = await context.prisma.user.findUnique({where: {clerkId: clerkId}})
+      const requestSender = await context.prisma.user.findUnique({where: {clerkId: clerkId}})
 
-      if(!currentUser){
+      if(!requestSender){
         throw new Error('Current User Not Found')
       }
 
-      const contactUser = await context.prisma.user.findUnique({where: {email: contactUserEmail}})
-      if(!contactUser){
+      const requestReceiver = await context.prisma.user.findUnique({where: {email: contactUserEmail}})
+      if(!requestReceiver){
         throw new Error('Contact Not Found')
       }
 
-      if(currentUser.clerkId === contactUser.clerkId){
+      if(requestSender.clerkId === requestReceiver.clerkId){
         throw new Error('Cannot Add Yourself As A Contact')
       }
 
       const existingContact = await context.prisma.contact.findFirst({where:{
-        userClerkId: currentUser.clerkId,
-        contactClerkId: contactUser.clerkId,
+        userClerkId: requestSender.clerkId,
+        contactClerkId: requestReceiver.clerkId,
       }})
 
       if(existingContact){
         throw new Error('Contact Already Exists')
       }
+
+      const existingFriendRequest = await context.prisma.friendRequest.findFirst({
+        where: {
+          senderClerkId: requestSender.clerkId,
+          receiverClerkId: requestReceiver.clerkId,
+          status: 'PENDING',
+        },
+      })
+
+    if (existingFriendRequest) {
+      throw new Error('Friend request already sent')
+    }
       
       
       const friendRequest = await context.prisma.friendRequest.create({
         data: {
-            sender: { connect: { id: currentUser.id } },
-            receiver: { connect: { id: contactUser.id } },
+            sender: { connect: { clerkId: requestSender.clerkId} },
+            receiver: { connect: { clerkId: requestReceiver.clerkId} },
             status: 'PENDING',
           },
         })
