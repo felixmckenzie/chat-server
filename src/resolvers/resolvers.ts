@@ -24,7 +24,12 @@ export const resolvers = {
           }
         },
         include:{
-          messages: true,
+          messages: {
+            include:{
+              sender: true,
+            }
+          },
+          members: true,
         }
       })
       return chats[0]
