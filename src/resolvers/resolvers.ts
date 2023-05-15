@@ -1,5 +1,5 @@
 import { Context } from '../context'
-import { CreateChannelInput, UserInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
+import { CreateChatInput, UserInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
 
 export const resolvers = {
   Query: {
@@ -8,21 +8,32 @@ export const resolvers = {
         where: { clerkId: args.clerkId || undefined }, include:{friends: true,  receivedRequests: {
           include: {
             sender: true,
-            receiver: true,
           },
         },},
       })
     },
-    getChannel: (_parent, args: { id: number }, context: Context) => {
-      return context.prisma.channel.findUnique({
-        where: { id: args.id || undefined },
+    getChatBetweenUsers: (_parent, args: { senderClerkId: string, receiverClerkId: string }, context: Context) => {
+      const chats = context.prisma.chat.findMany({
+        where: {
+          members:{
+            every:{
+              clerkId:{
+                in: [args.senderClerkId, args.receiverClerkId]
+              }
+            }
+          }
+        },
+        include:{
+          messages: true,
+        }
       })
+      return chats[0]
     },
-    getAllUserChannels: (_parent, args: { userInput: UserInput }, context: Context) => {
+    getAllUserChats: (_parent, args: { userInput: UserInput }, context: Context) => {
       return context.prisma.user
         .findUnique({
           where: { id: args.userInput.id || undefined, email: args.userInput.email },
-        }).channels()
+        }).chats()
      
     },
     friendRequestsSentByUser: (_parent, args: {clerkId: string}, context: Context) =>{
@@ -124,7 +135,7 @@ export const resolvers = {
 
     }
     ,
-    createChannel: async (_parent, args: { input: CreateChannelInput }, context: Context) => {
+    createChat: async (_parent, args: { input: CreateChatInput }, context: Context) => {
 
       const { name, userIds } = args.input
 
@@ -140,7 +151,7 @@ export const resolvers = {
         throw new Error('One or more users not found')
       }
 
-      const channel = await context.prisma.channel.create({
+      const chat = await context.prisma.chat.create({
         data: {
           name: name,
           members: {
@@ -153,10 +164,10 @@ export const resolvers = {
         },
       })  
 
-      return channel
+      return chat
     },
-    createMessage: async (_parent, args: {text: string, senderId: number, channelId: number}, context: Context) =>{
-        const { text, senderId, channelId } = args
+    createMessage: async (_parent, args: {text: string, senderId: number, chatId: number}, context: Context) =>{
+        const { text, senderId, chatId } = args
         
         const sender = await context.prisma.user.findUnique({
         where: { id: senderId },
@@ -165,10 +176,10 @@ export const resolvers = {
         throw new Error('Sender not found')
       }
 
-       const channel = await context.prisma.channel.findUnique({
-        where: { id: channelId },
+       const chat = await context.prisma.chat.findUnique({
+        where: { id: chatId },
       })
-      if (!channel) {
+      if (!chat) {
         throw new Error('Channel not found')
       }
 
@@ -178,13 +189,13 @@ export const resolvers = {
           sender: {
             connect: { id: senderId },
           },
-          channel: {
-            connect: { id: channelId },
+          chat: {
+            connect: { id: chatId },
           },
         },
       })
 
-       context.pubsub.publish(`messageSent-${channelId}`, { messageSent: message })
+       context.pubsub.publish(`messageSent-${chatId}`, { messageSent: message })
 
       return message
     },
@@ -205,8 +216,8 @@ export const resolvers = {
   },
   Subscription: {
     messageSent: {
-      subscribe: (_parent, args: { channelId: number }, context: Context) => {
-        return context.pubsub.asyncIterator(`messageSent-${args.channelId}`)
+      subscribe: (_parent, args: { chatId: number }, context: Context) => {
+        return context.pubsub.asyncIterator(`messageSent-${args.chatId}`)
     },
     resolve: (payload: {messageSent: Message}) => {
       return payload.messageSent

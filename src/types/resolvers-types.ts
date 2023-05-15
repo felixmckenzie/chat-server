@@ -15,8 +15,8 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type Channel = {
-  __typename?: 'Channel';
+export type Chat = {
+  __typename?: 'Chat';
   id: Scalars['Int'];
   isGroupChat: Scalars['Boolean'];
   members: Array<User>;
@@ -24,14 +24,7 @@ export type Channel = {
   name: Scalars['String'];
 };
 
-export type Contact = {
-  __typename?: 'Contact';
-  contactUser: User;
-  id: Scalars['Int'];
-  user: User;
-};
-
-export type CreateChannelInput = {
+export type CreateChatInput = {
   name?: InputMaybe<Scalars['String']>;
   userIds: Array<Scalars['Int']>;
 };
@@ -52,7 +45,7 @@ export enum FriendRequestStatus {
 
 export type Message = {
   __typename?: 'Message';
-  channel?: Maybe<Channel>;
+  chat: Chat;
   id: Scalars['Int'];
   sender: User;
   text: Scalars['String'];
@@ -61,30 +54,23 @@ export type Message = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addUsersToChannel: Channel;
-  createChannel: Channel;
+  createChat: Chat;
   createMessage: Message;
   createUser: User;
-  removeUsersFromChannel: Channel;
-  respondToFriendRequest: FriendRequest;
+  removeUsersFromChat: Chat;
+  respondToFriendRequest: User;
   sendFriendRequest: FriendRequest;
   setUserOnlineStatus: User;
 };
 
 
-export type MutationAddUsersToChannelArgs = {
-  chatId: Scalars['Int'];
-  userIds: Array<Scalars['Int']>;
-};
-
-
-export type MutationCreateChannelArgs = {
-  input: CreateChannelInput;
+export type MutationCreateChatArgs = {
+  input: CreateChatInput;
 };
 
 
 export type MutationCreateMessageArgs = {
-  channelId: Scalars['Int'];
+  chatId: Scalars['Int'];
   senderId: Scalars['Int'];
   text: Scalars['String'];
 };
@@ -95,8 +81,8 @@ export type MutationCreateUserArgs = {
 };
 
 
-export type MutationRemoveUsersFromChannelArgs = {
-  channelId: Scalars['Int'];
+export type MutationRemoveUsersFromChatArgs = {
+  chatId: Scalars['Int'];
   userIds: Array<Scalars['Int']>;
 };
 
@@ -122,11 +108,10 @@ export type Query = {
   __typename?: 'Query';
   friendRequestsReceivedByUser?: Maybe<Array<Maybe<FriendRequest>>>;
   friendRequestsSentByUser?: Maybe<Array<Maybe<FriendRequest>>>;
-  getAllUserChannels: Array<Channel>;
-  getChannel?: Maybe<Channel>;
+  getAllUserChats: Array<Chat>;
+  getChat?: Maybe<Chat>;
   getUser?: Maybe<User>;
   hello?: Maybe<Scalars['String']>;
-  messages: Array<Message>;
 };
 
 
@@ -140,23 +125,18 @@ export type QueryFriendRequestsSentByUserArgs = {
 };
 
 
-export type QueryGetAllUserChannelsArgs = {
+export type QueryGetAllUserChatsArgs = {
   userInput: UserInput;
 };
 
 
-export type QueryGetChannelArgs = {
+export type QueryGetChatArgs = {
   id: Scalars['Int'];
 };
 
 
 export type QueryGetUserArgs = {
   clerkId: Scalars['String'];
-};
-
-
-export type QueryMessagesArgs = {
-  channelId: Scalars['Int'];
 };
 
 export enum Role {
@@ -178,15 +158,17 @@ export type SubscriptionMessageSentArgs = {
 export type User = {
   __typename?: 'User';
   avatar?: Maybe<Scalars['String']>;
-  channels?: Maybe<Array<Maybe<Channel>>>;
+  chats?: Maybe<Array<Maybe<Chat>>>;
   clerkId: Scalars['String'];
-  contacts?: Maybe<Array<Maybe<Contact>>>;
   createdAt?: Maybe<Scalars['DateTime']>;
   email: Scalars['String'];
-  friendRequests?: Maybe<Array<Maybe<FriendRequest>>>;
+  friendOf?: Maybe<Array<Maybe<User>>>;
+  friends?: Maybe<Array<Maybe<User>>>;
   id: Scalars['Int'];
   isOnline?: Maybe<Scalars['Boolean']>;
   messages?: Maybe<Array<Maybe<Message>>>;
+  receivedRequests?: Maybe<Array<Maybe<FriendRequest>>>;
+  sentRequests?: Maybe<Array<Maybe<FriendRequest>>>;
   updatedAt?: Maybe<Scalars['DateTime']>;
   username: Scalars['String'];
 };
@@ -273,9 +255,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Channel: ResolverTypeWrapper<Channel>;
-  Contact: ResolverTypeWrapper<Contact>;
-  CreateChannelInput: CreateChannelInput;
+  Chat: ResolverTypeWrapper<Chat>;
+  CreateChatInput: CreateChatInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   FriendRequest: ResolverTypeWrapper<FriendRequest>;
   FriendRequestStatus: FriendRequestStatus;
@@ -294,9 +275,8 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
-  Channel: Channel;
-  Contact: Contact;
-  CreateChannelInput: CreateChannelInput;
+  Chat: Chat;
+  CreateChatInput: CreateChatInput;
   DateTime: Scalars['DateTime'];
   FriendRequest: FriendRequest;
   Int: Scalars['Int'];
@@ -310,19 +290,12 @@ export type ResolversParentTypes = {
   UserRegisterInput: UserRegisterInput;
 };
 
-export type ChannelResolvers<ContextType = any, ParentType extends ResolversParentTypes['Channel'] = ResolversParentTypes['Channel']> = {
+export type ChatResolvers<ContextType = any, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isGroupChat?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   members?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = {
-  contactUser?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -339,7 +312,7 @@ export type FriendRequestResolvers<ContextType = any, ParentType extends Resolve
 };
 
 export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
-  channel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType>;
+  chat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -348,12 +321,11 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addUsersToChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationAddUsersToChannelArgs, 'chatId' | 'userIds'>>;
-  createChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationCreateChannelArgs, 'input'>>;
-  createMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'channelId' | 'senderId' | 'text'>>;
+  createChat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<MutationCreateChatArgs, 'input'>>;
+  createMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'chatId' | 'senderId' | 'text'>>;
   createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
-  removeUsersFromChannel?: Resolver<ResolversTypes['Channel'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChannelArgs, 'channelId' | 'userIds'>>;
-  respondToFriendRequest?: Resolver<ResolversTypes['FriendRequest'], ParentType, ContextType, RequireFields<MutationRespondToFriendRequestArgs, 'requestId' | 'status'>>;
+  removeUsersFromChat?: Resolver<ResolversTypes['Chat'], ParentType, ContextType, RequireFields<MutationRemoveUsersFromChatArgs, 'chatId' | 'userIds'>>;
+  respondToFriendRequest?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRespondToFriendRequestArgs, 'requestId' | 'status'>>;
   sendFriendRequest?: Resolver<ResolversTypes['FriendRequest'], ParentType, ContextType, RequireFields<MutationSendFriendRequestArgs, 'clerkId' | 'contactUserEmail'>>;
   setUserOnlineStatus?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserOnlineStatusArgs, 'clerkId' | 'isOnline'>>;
 };
@@ -361,11 +333,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   friendRequestsReceivedByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsReceivedByUserArgs, 'clerkId'>>;
   friendRequestsSentByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsSentByUserArgs, 'clerkId'>>;
-  getAllUserChannels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetAllUserChannelsArgs, 'userInput'>>;
-  getChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<QueryGetChannelArgs, 'id'>>;
+  getAllUserChats?: Resolver<Array<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetAllUserChatsArgs, 'userInput'>>;
+  getChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatArgs, 'id'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'clerkId'>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, 'channelId'>>;
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
@@ -375,23 +346,24 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  channels?: Resolver<Maybe<Array<Maybe<ResolversTypes['Channel']>>>, ParentType, ContextType>;
+  chats?: Resolver<Maybe<Array<Maybe<ResolversTypes['Chat']>>>, ParentType, ContextType>;
   clerkId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  contacts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Contact']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  friendRequests?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType>;
+  friendOf?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  friends?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isOnline?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
+  receivedRequests?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType>;
+  sentRequests?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
-  Channel?: ChannelResolvers<ContextType>;
-  Contact?: ContactResolvers<ContextType>;
+  Chat?: ChatResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   FriendRequest?: FriendRequestResolvers<ContextType>;
   Message?: MessageResolvers<ContextType>;

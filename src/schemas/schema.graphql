@@ -9,7 +9,7 @@ input UserRegisterInput {
   clerkId: String
 }
 
-input CreateChannelInput {
+input CreateChatInput {
   name: String
   userIds: [Int!]!
 }
@@ -28,7 +28,7 @@ type User {
   avatar: String
   username: String!
   isOnline: Boolean
-  channels: [Channel]
+  chats: [Chat]
   messages: [Message]
   friends: [User]
   friendOf: [User]
@@ -54,7 +54,7 @@ enum Role {
   REGULAR
 }
 
-type Channel {
+type Chat {
   id: Int!
   name: String!
   members: [User!]!
@@ -66,24 +66,22 @@ type Message {
   id: Int!
   text: String!
   sender: User!
-  channel: Channel
+  chat: Chat!
   timestamp: DateTime!
 }
 
 type Query {
-  getChannel(id: Int!): Channel
+  getChatBetweenUsers(senderClerkId: String!, receiverClerkId, String! ): Chat
   getUser(clerkId: String!): User
-  getAllUserChannels(userInput: UserInput!): [Channel!]!
+  getAllUserChats(userInput: UserInput!): [Chat!]!
   friendRequestsSentByUser(clerkId: String!): [FriendRequest]
   friendRequestsReceivedByUser(clerkId: String!): [FriendRequest]
-  messages(channelId: Int!): [Message!]!
 }
 
 type Mutation {
-  createChannel(input: CreateChannelInput!): Channel!
-  addUsersToChannel(chatId: Int!, userIds: [Int!]!): Channel!
-  removeUsersFromChannel(channelId: Int!, userIds: [Int!]!): Channel!
-  createMessage(text: String!, senderId: Int!, channelId: Int!): Message!
+  createChat(input: CreateChatInput!): Chat!
+  removeUsersFromChat(chatId: Int!, userIds: [Int!]!): Chat!
+  createMessage(text: String!, senderId: Int!, chatId: Int!): Message!
   createUser(input: UserRegisterInput!): User!
   sendFriendRequest(clerkId: String!, contactUserEmail: String!): FriendRequest!
   respondToFriendRequest(requestId: Int!, status: FriendRequestStatus!): User!
