@@ -70,7 +70,7 @@ type Message {
 }
 
 type Query {
-  getChatBetweenUsers(senderClerkId: String!, receiverClerkId: String!): Chat
+  getChatBetweenUsers(userIds: [String!]!): Chat
   getUser(clerkId: String!): User
   getAllUserChats(userInput: UserInput!): [Chat!]!
   friendRequestsSentByUser(clerkId: String!): [FriendRequest]

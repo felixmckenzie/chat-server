@@ -12,13 +12,13 @@ export const resolvers = {
         },},
       })
     },
-    getChatBetweenUsers: (_parent, args: { senderClerkId: string, receiverClerkId: string }, context: Context) => {
+    getChatBetweenUsers: (_parent, args: { userIds: string[] }, context: Context) => {
       const chats = context.prisma.chat.findMany({
         where: {
           members:{
             every:{
               clerkId:{
-                in: [args.senderClerkId, args.receiverClerkId]
+                in: [...args.userIds]
               }
             }
           }
