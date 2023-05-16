@@ -198,6 +198,7 @@ export const resolvers = {
             connect: { id: chatId },
           },
         },
+        include: {sender: true}
       })
 
        context.pubsub.publish(`messageSent-${chatId}`, { messageSent: message })
