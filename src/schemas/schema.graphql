@@ -11,7 +11,7 @@ input UserRegisterInput {
 
 input CreateChatInput {
   name: String
-  userIds: [Int!]!
+  userIds: [String!]!
 }
 
 input UserInput {
@@ -56,10 +56,9 @@ enum Role {
 
 type Chat {
   id: Int!
-  name: String!
+  name: String
   members: [User!]!
   messages: [Message!]!
-  isGroupChat: Boolean!
 }
 
 type Message {
@@ -81,7 +80,7 @@ type Query {
 type Mutation {
   createChat(input: CreateChatInput!): Chat!
   removeUsersFromChat(chatId: Int!, userIds: [Int!]!): Chat!
-  createMessage(text: String!, senderId: Int!, chatId: Int!): Message!
+  createMessage(text: String!, senderId: String!, chatId: Int!): Message!
   createUser(input: UserRegisterInput!): User!
   sendFriendRequest(clerkId: String!, contactUserEmail: String!): FriendRequest!
   respondToFriendRequest(requestId: Int!, status: FriendRequestStatus!): User!

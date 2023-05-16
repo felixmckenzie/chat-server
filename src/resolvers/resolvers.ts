@@ -146,7 +146,7 @@ export const resolvers = {
 
       const users = await context.prisma.user.findMany({
         where: {
-          id: {
+          clerkId: {
             in: userIds,
           },
         },
@@ -158,11 +158,10 @@ export const resolvers = {
 
       const chat = await context.prisma.chat.create({
         data: {
-          name: name,
+         ...(name && {name: name}),
           members: {
             connect: users.map((user) => ({ id: user.id })),
           },
-          isGroupChat: true,
         },
         include: {
             members: true, // Include the members relation in the response
@@ -171,11 +170,11 @@ export const resolvers = {
 
       return chat
     },
-    createMessage: async (_parent, args: {text: string, senderId: number, chatId: number}, context: Context) =>{
+    createMessage: async (_parent, args: {text: string, senderId: string, chatId: number}, context: Context) =>{
         const { text, senderId, chatId } = args
         
         const sender = await context.prisma.user.findUnique({
-        where: { id: senderId },
+        where: { clerkId: senderId },
       })
       if (!sender) {
         throw new Error('Sender not found')
@@ -184,15 +183,16 @@ export const resolvers = {
        const chat = await context.prisma.chat.findUnique({
         where: { id: chatId },
       })
+      
       if (!chat) {
-        throw new Error('Channel not found')
+        throw new Error('Chat not found')
       }
 
        const message = await context.prisma.message.create({
         data: {
           text: text,
           sender: {
-            connect: { id: senderId },
+            connect: { clerkId: senderId },
           },
           chat: {
             connect: { id: chatId },

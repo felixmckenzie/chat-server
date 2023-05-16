@@ -18,15 +18,14 @@ export type Scalars = {
 export type Chat = {
   __typename?: 'Chat';
   id: Scalars['Int'];
-  isGroupChat: Scalars['Boolean'];
   members: Array<User>;
   messages: Array<Message>;
-  name: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
 };
 
 export type CreateChatInput = {
   name?: InputMaybe<Scalars['String']>;
-  userIds: Array<Scalars['Int']>;
+  userIds: Array<Scalars['String']>;
 };
 
 export type FriendRequest = {
@@ -71,7 +70,7 @@ export type MutationCreateChatArgs = {
 
 export type MutationCreateMessageArgs = {
   chatId: Scalars['Int'];
-  senderId: Scalars['Int'];
+  senderId: Scalars['String'];
   text: Scalars['String'];
 };
 
@@ -109,7 +108,7 @@ export type Query = {
   friendRequestsReceivedByUser?: Maybe<Array<Maybe<FriendRequest>>>;
   friendRequestsSentByUser?: Maybe<Array<Maybe<FriendRequest>>>;
   getAllUserChats: Array<Chat>;
-  getChat?: Maybe<Chat>;
+  getChatBetweenUsers?: Maybe<Chat>;
   getUser?: Maybe<User>;
   hello?: Maybe<Scalars['String']>;
 };
@@ -130,8 +129,9 @@ export type QueryGetAllUserChatsArgs = {
 };
 
 
-export type QueryGetChatArgs = {
-  id: Scalars['Int'];
+export type QueryGetChatBetweenUsersArgs = {
+  receiverClerkId: Scalars['String'];
+  senderClerkId: Scalars['String'];
 };
 
 
@@ -292,10 +292,9 @@ export type ResolversParentTypes = {
 
 export type ChatResolvers<ContextType = any, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  isGroupChat?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   members?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -334,7 +333,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   friendRequestsReceivedByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsReceivedByUserArgs, 'clerkId'>>;
   friendRequestsSentByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsSentByUserArgs, 'clerkId'>>;
   getAllUserChats?: Resolver<Array<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetAllUserChatsArgs, 'userInput'>>;
-  getChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatArgs, 'id'>>;
+  getChatBetweenUsers?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatBetweenUsersArgs, 'receiverClerkId' | 'senderClerkId'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'clerkId'>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
