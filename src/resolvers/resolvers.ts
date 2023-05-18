@@ -32,7 +32,7 @@ export const resolvers = {
           members: true,
         }
       })
-      return chats[0]
+      return chats
     },
     getAllUserChats: (_parent, args: { userInput: UserInput }, context: Context) => {
       return context.prisma.user
