@@ -12,9 +12,9 @@ export const resolvers = {
         },},
       })
     },
-    getChatBetweenUsers: (_parent, args: { userIds: string[] }, context: Context) => {
+    getChatBetweenUsers: async (_parent, args: { userIds: string[] }, context: Context) => {
       
-      const chats = context.prisma.chat.findMany({
+      const chats = await context.prisma.chat.findMany({
         where: {
           members:{
             every:{
