@@ -13,6 +13,7 @@ export const resolvers = {
       })
     },
     getChatBetweenUsers: (_parent, args: { userIds: string[] }, context: Context) => {
+      
       const chats = context.prisma.chat.findMany({
         where: {
           members:{
@@ -32,7 +33,7 @@ export const resolvers = {
           members: true,
         }
       })
-      return chats
+      return chats[0] 
     },
     getAllUserChats: (_parent, args: { userInput: UserInput }, context: Context) => {
       return context.prisma.user
