@@ -1,5 +1,5 @@
 import { Context } from '../context'
-import { CreateChatInput, UserInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
+import { CreateChatInput, Message, FriendRequestStatus, User } from '../types/resolvers-types'
 
 export const resolvers = {
   Query: {
