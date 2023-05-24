@@ -48,7 +48,7 @@ export const resolvers = {
           members: true
         },
       }).catch((error) => {
-        throw new Error(`Error fetching chats for user: ${error.message}`);
+        throw new Error(`Error fetching chats for user: ${error.message}`)
       })
     },
     friendRequestsSentByUser: (_parent, args: {clerkId: string}, context: Context) =>{
