@@ -45,7 +45,8 @@ export const resolvers = {
           }
         },
         include: {
-          members: true
+          members: true,
+          messages: true,
         },
       }).catch((error) => {
         throw new Error(`Error fetching chats for user: ${error.message}`)
