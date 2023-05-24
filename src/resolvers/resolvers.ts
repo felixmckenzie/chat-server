@@ -49,9 +49,7 @@ export const resolvers = {
         },
       }).catch((error) => {
         throw new Error(`Error fetching chats for user: ${error.message}`);
-      });
-    },
-     
+      })
     },
     friendRequestsSentByUser: (_parent, args: {clerkId: string}, context: Context) =>{
       return context.prisma.friendRequest.findMany({

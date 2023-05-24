@@ -125,13 +125,12 @@ export type QueryFriendRequestsSentByUserArgs = {
 
 
 export type QueryGetAllUserChatsArgs = {
-  userInput: UserInput;
+  clerkId: Scalars['String'];
 };
 
 
 export type QueryGetChatBetweenUsersArgs = {
-  receiverClerkId: Scalars['String'];
-  senderClerkId: Scalars['String'];
+  userIds: Array<Scalars['String']>;
 };
 
 
@@ -152,7 +151,7 @@ export type Subscription = {
 
 
 export type SubscriptionMessageSentArgs = {
-  channelId: Scalars['Int'];
+  chatId: Scalars['Int'];
 };
 
 export type User = {
@@ -171,11 +170,6 @@ export type User = {
   sentRequests?: Maybe<Array<Maybe<FriendRequest>>>;
   updatedAt?: Maybe<Scalars['DateTime']>;
   username: Scalars['String'];
-};
-
-export type UserInput = {
-  email: Scalars['String'];
-  id: Scalars['Int'];
 };
 
 export type UserRegisterInput = {
@@ -268,7 +262,6 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
-  UserInput: UserInput;
   UserRegisterInput: UserRegisterInput;
 };
 
@@ -286,7 +279,6 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   Subscription: {};
   User: User;
-  UserInput: UserInput;
   UserRegisterInput: UserRegisterInput;
 };
 
@@ -332,14 +324,14 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   friendRequestsReceivedByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsReceivedByUserArgs, 'clerkId'>>;
   friendRequestsSentByUser?: Resolver<Maybe<Array<Maybe<ResolversTypes['FriendRequest']>>>, ParentType, ContextType, RequireFields<QueryFriendRequestsSentByUserArgs, 'clerkId'>>;
-  getAllUserChats?: Resolver<Array<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetAllUserChatsArgs, 'userInput'>>;
-  getChatBetweenUsers?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatBetweenUsersArgs, 'receiverClerkId' | 'senderClerkId'>>;
+  getAllUserChats?: Resolver<Array<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetAllUserChatsArgs, 'clerkId'>>;
+  getChatBetweenUsers?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryGetChatBetweenUsersArgs, 'userIds'>>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'clerkId'>>;
   hello?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
-  messageSent?: SubscriptionResolver<ResolversTypes['Message'], "messageSent", ParentType, ContextType, RequireFields<SubscriptionMessageSentArgs, 'channelId'>>;
+  messageSent?: SubscriptionResolver<ResolversTypes['Message'], "messageSent", ParentType, ContextType, RequireFields<SubscriptionMessageSentArgs, 'chatId'>>;
   userOnlineStatusChanged?: SubscriptionResolver<ResolversTypes['User'], "userOnlineStatusChanged", ParentType, ContextType>;
 };
 
