@@ -14,11 +14,6 @@ input CreateChatInput {
   userIds: [String!]!
 }
 
-input UserInput {
-  id: Int!
-  email: String!
-}
-
 type User {
   id: Int!
   clerkId: String!
@@ -72,7 +67,7 @@ type Message {
 type Query {
   getChatBetweenUsers(userIds: [String!]!): Chat
   getUser(clerkId: String!): User
-  getAllUserChats(userInput: UserInput!): [Chat!]!
+  getAllUserChats(clerkId: String!): [Chat!]!
   friendRequestsSentByUser(clerkId: String!): [FriendRequest]
   friendRequestsReceivedByUser(clerkId: String!): [FriendRequest]
 }

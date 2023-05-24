@@ -35,11 +35,22 @@ export const resolvers = {
       })
       return chats[0] 
     },
-    getAllUserChats: (_parent, args: { userInput: UserInput }, context: Context) => {
-      return context.prisma.user
-        .findUnique({
-          where: { id: args.userInput.id || undefined, email: args.userInput.email },
-        }).chats()
+    getAllUserChats: (_parent, args: { clerkId: string }, context: Context) => {
+      return context.prisma.chat.findMany({
+        where: {
+          members: {
+            some: {
+              clerkId: args.clerkId
+            }
+          }
+        },
+        include: {
+          members: true
+        },
+      }).catch((error) => {
+        throw new Error(`Error fetching chats for user: ${error.message}`);
+      });
+    },
      
     },
     friendRequestsSentByUser: (_parent, args: {clerkId: string}, context: Context) =>{
