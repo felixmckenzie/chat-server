@@ -39,10 +39,14 @@ export const resolvers = {
         return context.prisma.chat.findUnique({
           where: {
             id: args.chatId
+          },
+          include:{
+          messages: true,
           }
-        })
-    }
-    ,
+        }).catch((error) => {
+        throw new Error(`Error fetching chats for user: ${error.message}`)
+      })
+    },
     getAllUserChats: (_parent, args: { clerkId: string }, context: Context) => {
       return context.prisma.chat.findMany({
         where: {
@@ -54,7 +58,6 @@ export const resolvers = {
         },
         include: {
           members: true,
-          messages: true,
         },
       }).catch((error) => {
         throw new Error(`Error fetching chats for user: ${error.message}`)
