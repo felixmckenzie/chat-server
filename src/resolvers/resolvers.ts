@@ -42,7 +42,11 @@ export const resolvers = {
           },
           include:{
           members: true,
-          messages: true,
+          messages: {
+            include: {
+              sender: true,
+            }
+          },
           }
         }).catch((error) => {
         throw new Error(`Error fetching chats for user: ${error.message}`)
