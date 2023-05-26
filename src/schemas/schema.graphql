@@ -66,6 +66,7 @@ type Message {
 
 type Query {
   getChatBetweenUsers(userIds: [String!]!): Chat
+  getChatById(chatId: Int!): Chat
   getUser(clerkId: String!): User
   getAllUserChats(clerkId: String!): [Chat!]!
   friendRequestsSentByUser(clerkId: String!): [FriendRequest]
