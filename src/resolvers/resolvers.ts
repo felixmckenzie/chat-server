@@ -35,6 +35,14 @@ export const resolvers = {
       })
       return chats[0] 
     },
+    getChatById: (_parent, args: {chatId: number}, context: Context)=> {
+        return context.prisma.chat.findUnique({
+          where: {
+            id: args.chatId
+          }
+        })
+    }
+    ,
     getAllUserChats: (_parent, args: { clerkId: string }, context: Context) => {
       return context.prisma.chat.findMany({
         where: {
