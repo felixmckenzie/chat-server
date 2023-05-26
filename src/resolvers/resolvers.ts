@@ -41,6 +41,7 @@ export const resolvers = {
             id: args.chatId
           },
           include:{
+          members: true,
           messages: true,
           }
         }).catch((error) => {
@@ -57,6 +58,7 @@ export const resolvers = {
           }
         },
         include: {
+          messages: true,
           members: true,
         },
       }).catch((error) => {
